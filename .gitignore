@@ -1,0 +1,7 @@
+.env
+agentos.db
+agentos.db-shm
+agentos.db-wal
+__pycache__/
+*.pyc
+.DS_Store

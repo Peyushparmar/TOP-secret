@@ -1,0 +1,26 @@
+# ============================================================
+# requirements.txt — All Python dependencies
+# Install with: pip install -r requirements.txt
+# ============================================================
+
+# Core AI
+anthropic>=0.25.0          # Claude API (claude-sonnet-4-6)
+
+# Web Server
+flask>=3.0.0               # Webhook server
+gunicorn>=21.0.0            # Production WSGI server
+
+# HTTP requests (GHL messaging, Bland AI, Facebook)
+requests>=2.31.0
+
+# Task scheduling (production replacement for threading.Timer)
+celery>=5.3.0              # Async task queue
+redis>=5.0.0               # Celery broker + result backend
+
+# Utilities
+python-dotenv>=1.0.0       # Load .env file for API keys
+pytz>=2024.1               # Timezone handling
+
+# Security
+cryptography>=42.0.0       # HMAC signature verification
+bcrypt>=4.0.0              # Password hashing for dashboard login
