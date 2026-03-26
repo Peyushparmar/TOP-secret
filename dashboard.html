@@ -8,607 +8,529 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root {
-  --bg:       #0c0d14;
-  --bg2:      #111320;
-  --surface:  #161929;
-  --surface2: #1c2035;
-  --border:   rgba(255,255,255,0.06);
-  --border2:  rgba(255,255,255,0.1);
-  --purple:   #9b8afb;
-  --purple-d: #7c6ce0;
-  --blue:     #60a5fa;
-  --green:    #34d399;
-  --yellow:   #fbbf24;
-  --red:      #f87171;
-  --text:     #e2e8f0;
-  --muted:    #64748b;
-  --light:    #94a3b8;
+  --bg:       #f4f5f7;
+  --bg2:      #ffffff;
+  --surface:  #ffffff;
+  --surface2: #f9fafb;
+  --border:   rgba(0,0,0,0.08);
+  --border2:  rgba(0,0,0,0.12);
+  --black:    #111827;
+  --dark:     #374151;
+  --muted:    #9ca3af;
+  --light:    #6b7280;
+  --green:    #10b981;
+  --blue:     #3b82f6;
+  --yellow:   #f59e0b;
+  --red:      #ef4444;
+  --orange:   #f97316;
   --radius:   12px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; font-size: 14px; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--black); min-height: 100vh; overflow-x: hidden; font-size: 14px; }
 
 /* ── LAYOUT ───────────────────────────────── */
 .app { display: flex; min-height: 100vh; }
 
 /* ── SIDEBAR ──────────────────────────────── */
 .sidebar {
-  width: 230px; flex-shrink: 0;
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
+  width: 240px; flex-shrink: 0;
+  background: var(--black);
   display: flex; flex-direction: column;
   position: fixed; inset: 0 auto 0 0; z-index: 100;
 }
 .sb-logo {
-  padding: 20px 16px 18px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 10px;
+  padding: 22px 18px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; gap: 11px;
 }
 .sb-mark {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--purple-d), #4f46e5);
+  width: 36px; height: 36px; border-radius: 10px;
+  background: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-size: 15px; flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(124,108,224,0.3);
+  font-size: 18px; flex-shrink: 0;
 }
-.sb-brand { font-size: 0.82rem; font-weight: 700; letter-spacing: -0.2px; }
-.sb-brand span { display: block; font-size: 0.62rem; color: var(--muted); font-weight: 400; margin-top: 1px; }
-.sb-nav { padding: 12px 10px; flex: 1; overflow-y: auto; }
-.sb-section { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); padding: 10px 8px 5px; }
+.sb-brand { font-size: 0.85rem; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+.sb-brand span { display: block; font-size: 0.62rem; color: rgba(255,255,255,0.4); font-weight: 400; margin-top: 2px; }
+.sb-nav { padding: 14px 10px; flex: 1; overflow-y: auto; }
+.sb-section { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 1.4px; color: rgba(255,255,255,0.3); padding: 12px 10px 5px; }
 .nav-item {
-  display: flex; align-items: center; gap: 9px;
-  padding: 8px 10px; border-radius: 8px;
-  font-size: 0.78rem; font-weight: 500; color: var(--muted);
-  cursor: pointer; transition: all 0.15s; margin-bottom: 1px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 9px;
+  font-size: 0.78rem; font-weight: 500; color: rgba(255,255,255,0.55);
+  cursor: pointer; transition: all 0.15s; margin-bottom: 2px;
   border: 1px solid transparent; user-select: none;
 }
-.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
-.nav-item.active { background: rgba(155,138,251,0.1); color: var(--purple); border-color: rgba(155,138,251,0.15); }
-.nav-item .n-icon { font-size: 13px; width: 16px; text-align: center; opacity: 0.8; }
+.nav-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.nav-item.active { background: #fff; color: var(--black); font-weight: 700; }
+.nav-item .n-icon { font-size: 15px; width: 20px; text-align: center; }
 .nav-item .n-badge {
   margin-left: auto; font-size: 0.6rem; font-weight: 700;
-  background: rgba(155,138,251,0.15); color: var(--purple);
-  padding: 2px 6px; border-radius: 10px;
+  background: rgba(255,255,255,0.15); color: #fff;
+  padding: 2px 7px; border-radius: 10px;
 }
+.nav-item.active .n-badge { background: rgba(0,0,0,0.1); color: var(--black); }
 .sb-footer {
-  padding: 12px 16px; border-top: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px;
+  padding: 14px 18px; border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; gap: 10px;
 }
-.online-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; animation: pulse-dot 2s infinite; }
-@keyframes pulse-dot { 0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,0.4);} 50%{box-shadow:0 0 0 4px rgba(52,211,153,0);} }
-.sb-footer-text { font-size: 0.7rem; color: var(--muted); }
-.sb-footer-text strong { color: var(--green); font-weight: 600; }
+.sb-avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0; cursor: pointer;
+}
+.sb-footer-text { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+.sb-footer-text strong { color: #fff; font-weight: 600; display: block; font-size: 0.72rem; }
+.online-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; animation: pulse-dot 2s infinite; margin-left: auto; }
+@keyframes pulse-dot { 0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.4);} 50%{box-shadow:0 0 0 4px rgba(16,185,129,0);} }
 
 /* ── MAIN ─────────────────────────────────── */
-.main { margin-left: 230px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
 /* ── TOPBAR ───────────────────────────────── */
 .topbar {
-  background: rgba(17,19,32,0.9); backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.9); backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  padding: 13px 24px; display: flex; align-items: center;
+  padding: 14px 26px; display: flex; align-items: center;
   justify-content: space-between; position: sticky; top: 0; z-index: 50;
 }
-.topbar-title { font-size: 0.88rem; font-weight: 700; }
-.topbar-sub { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
+.topbar-title { font-size: 0.9rem; font-weight: 800; color: var(--black); }
+.topbar-sub { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
 .topbar-right { display: flex; align-items: center; gap: 8px; }
 .tb-btn {
-  padding: 6px 12px; border-radius: 7px; font-size: 0.72rem; font-weight: 600;
-  cursor: pointer; border: 1px solid var(--border2); background: var(--surface);
-  color: var(--light); transition: all 0.15s; white-space: nowrap;
+  padding: 7px 14px; border-radius: 8px; font-size: 0.72rem; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border2); background: #fff;
+  color: var(--dark); transition: all 0.15s; white-space: nowrap;
 }
-.tb-btn:hover { background: var(--surface2); color: var(--text); }
-.tb-btn.primary {
-  background: rgba(155,138,251,0.15); color: var(--purple);
-  border-color: rgba(155,138,251,0.25);
-}
-.tb-btn.primary:hover { background: rgba(155,138,251,0.22); }
+.tb-btn:hover { background: var(--bg); border-color: var(--black); }
+.tb-btn.primary { background: var(--black); color: #fff; border-color: var(--black); }
+.tb-btn.primary:hover { background: var(--dark); }
 .live-tag {
   display: flex; align-items: center; gap: 5px;
   font-size: 0.65rem; font-weight: 700; color: var(--green);
-  background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2);
-  border-radius: 20px; padding: 4px 10px;
+  background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);
+  border-radius: 20px; padding: 5px 11px;
 }
-.live-tag::before { content:''; width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse-dot 1.5s infinite; }
-.clock { font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.live-tag::before { content:''; width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse-dot 1.5s infinite; }
+.clock { font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 500; }
 
 /* ── PAGE ─────────────────────────────────── */
-.page { display: none; padding: 22px 24px; animation: fadeIn 0.25s ease; }
+.page { display: none; padding: 24px 26px; animation: fadeIn 0.2s ease; }
 .page.active { display: block; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
 
-/* ── GRID HELPERS ─────────────────────────── */
-.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
-.g-auto { display: grid; grid-template-columns: 1.5fr 1fr; gap: 14px; }
+/* ── GRID ─────────────────────────────────── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+.g-auto { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; }
 
 /* ── CARD ─────────────────────────────────── */
 .card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 .card-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px; border-bottom: 1px solid var(--border);
+  padding: 15px 18px; border-bottom: 1px solid var(--border);
 }
-.card-header-left h3 { font-size: 0.8rem; font-weight: 700; }
+.card-header-left h3 { font-size: 0.82rem; font-weight: 700; color: var(--black); }
 .card-header-left p { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
-.card-body { padding: 16px; }
-.mb14 { margin-bottom: 14px; }
-.mb20 { margin-bottom: 20px; }
+.card-body { padding: 18px; }
+.mb16 { margin-bottom: 16px; }
+.mb22 { margin-bottom: 22px; }
 
 /* ── TAGS ─────────────────────────────────── */
 .tag {
   display: inline-flex; align-items: center; gap: 4px;
-  padding: 2px 8px; border-radius: 20px; font-size: 0.62rem; font-weight: 700;
+  padding: 3px 9px; border-radius: 20px; font-size: 0.62rem; font-weight: 700;
 }
-.tag-purple { background: rgba(155,138,251,0.12); color: var(--purple); }
-.tag-green  { background: rgba(52,211,153,0.12);  color: var(--green);  }
-.tag-blue   { background: rgba(96,165,250,0.12);  color: var(--blue);   }
-.tag-yellow { background: rgba(251,191,36,0.12);  color: var(--yellow); }
-.tag-red    { background: rgba(248,113,113,0.12); color: var(--red);    }
-.tag-muted  { background: rgba(100,116,139,0.12); color: var(--muted);  }
-.tag::before { content:''; width:4px;height:4px;border-radius:50%;background:currentColor; }
+.tag-black  { background: #111827;             color: #fff; }
+.tag-green  { background: rgba(16,185,129,0.1); color: #059669; }
+.tag-blue   { background: rgba(59,130,246,0.1); color: #2563eb; }
+.tag-yellow { background: rgba(245,158,11,0.1); color: #d97706; }
+.tag-red    { background: rgba(239,68,68,0.1);  color: #dc2626; }
+.tag-gray   { background: rgba(0,0,0,0.06);     color: var(--light); }
+.tag-orange { background: rgba(249,115,22,0.1); color: #ea580c; }
 
-/* ── STAT TILE ────────────────────────────── */
+/* ── STAT TILES ───────────────────────────── */
 .stat-tile {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px;
-  position: relative; overflow: hidden; cursor: default;
-  transition: border-color 0.2s, transform 0.2s;
+  border-radius: var(--radius); padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: box-shadow 0.15s;
 }
-.stat-tile:hover { border-color: var(--border2); transform: translateY(-1px); }
-.stat-tile::after {
-  content:''; position:absolute; top:0;left:0;right:0;height:2px;
-  background: var(--accent-color, var(--purple));
-  opacity: 0.6;
-}
-.st-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 10px; }
-.st-value { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; line-height: 1; }
-.st-sub { font-size: 0.65rem; color: var(--muted); margin-top: 6px; }
-.st-icon { position: absolute; right: 12px; top: 14px; font-size: 18px; opacity: 0.18; }
+.stat-tile:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.st-emoji { font-size: 22px; margin-bottom: 10px; }
+.st-val { font-size: 1.8rem; font-weight: 800; color: var(--black); line-height: 1; margin-bottom: 4px; }
+.st-label { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
+.st-change { font-size: 0.65rem; font-weight: 600; margin-top: 6px; }
+.st-up { color: var(--green); }
+.st-neutral { color: var(--muted); }
 
-/* ── AGENT CARD ───────────────────────────── */
-.agent-tile {
+/* ── AGENT CARDS ──────────────────────────── */
+.agent-card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px; cursor: pointer;
-  transition: all 0.2s;
+  border-radius: var(--radius); padding: 20px;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
-.agent-tile:hover { border-color: var(--border2); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
-.agent-tile.is-active { border-color: rgba(52,211,153,0.25); }
-.agent-tile.is-busy   { border-color: rgba(251,191,36,0.25); }
-.at-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-.at-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.at-name { font-size: 0.82rem; font-weight: 700; margin-bottom: 2px; }
-.at-role { font-size: 0.65rem; color: var(--muted); }
-.at-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 10px 0; }
-.at-stat { background: var(--bg2); border-radius: 7px; padding: 8px; }
-.at-stat .v { font-size: 1.1rem; font-weight: 800; }
-.at-stat .l { font-size: 0.6rem; color: var(--muted); margin-top: 1px; }
-.at-task {
-  background: var(--bg2); border-radius: 7px; padding: 9px 10px;
-  border-left: 2px solid var(--purple); font-size: 0.7rem; color: var(--light); line-height: 1.5;
-}
-.at-task-label { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 3px; }
+.agent-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); transform: translateY(-1px); border-color: var(--border2); }
+.ac-emoji { font-size: 28px; margin-bottom: 12px; }
+.ac-title { font-size: 0.88rem; font-weight: 800; color: var(--black); margin-bottom: 4px; }
+.ac-sub { font-size: 0.7rem; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+.ac-task { font-size: 0.7rem; color: var(--dark); background: var(--bg); border-radius: 7px; padding: 8px 10px; border-left: 3px solid var(--black); margin-bottom: 14px; }
+.ac-stats { display: flex; gap: 14px; }
+.ac-stat { text-align: center; }
+.ac-stat-val { font-size: 1rem; font-weight: 800; color: var(--black); }
+.ac-stat-lbl { font-size: 0.58rem; color: var(--muted); margin-top: 1px; }
+.ac-btn { margin-top: 14px; width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border2); background: var(--bg); color: var(--dark); font-size: 0.72rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.ac-btn:hover { background: var(--black); color: #fff; border-color: var(--black); }
 
-/* ── FEED ─────────────────────────────────── */
-.feed { max-height: 380px; overflow-y: auto; }
-.feed-item {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.025);
-  transition: background 0.1s; cursor: pointer;
-}
+/* ── ACTIVITY FEED ────────────────────────── */
+.feed-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .feed-item:last-child { border-bottom: none; }
-.feed-item:hover { background: rgba(255,255,255,0.015); }
-.feed-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.feed-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
 .feed-body { flex: 1; min-width: 0; }
-.feed-msg { font-size: 0.75rem; line-height: 1.45; color: var(--light); }
-.feed-meta { font-size: 0.62rem; color: var(--muted); margin-top: 3px; display: flex; gap: 8px; align-items: center; }
-.feed-agent { font-size: 0.58rem; font-weight: 700; padding: 1px 6px; border-radius: 8px; }
+.feed-msg { font-size: 0.73rem; color: var(--dark); line-height: 1.5; }
+.feed-agent { font-size: 0.58rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; vertical-align: middle; }
+.feed-meta { font-size: 0.63rem; color: var(--muted); margin-top: 2px; }
 
-/* ── TABLE ────────────────────────────────── */
-.tbl-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
-thead th {
-  text-align: left; padding: 9px 14px;
-  font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.7px; color: var(--muted);
-  background: rgba(255,255,255,0.015);
-  border-bottom: 1px solid var(--border); white-space: nowrap;
-  cursor: pointer; user-select: none;
-}
-thead th:hover { color: var(--text); }
-tbody tr { border-bottom: 1px solid rgba(255,255,255,0.025); transition: background 0.1s; cursor: pointer; }
-tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: rgba(255,255,255,0.02); }
-tbody td { padding: 10px 14px; vertical-align: middle; }
-.lead-name { font-weight: 600; font-size: 0.78rem; }
-.lead-id { font-size: 0.62rem; color: var(--muted); margin-top: 1px; }
-.ch-pip { display: flex; gap: 3px; }
-.ch-dot { width: 20px; height: 20px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+/* ── PROGRESS BARS ────────────────────────── */
+.pbar { height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.pbar-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
 
-/* ── SEARCH / FILTER BAR ──────────────────── */
-.filter-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-.search-wrap { position: relative; flex: 1; min-width: 160px; }
-.search-input {
-  width: 100%; background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 7px; padding: 7px 10px 7px 30px;
-  font-size: 0.75rem; color: var(--text); outline: none; transition: border-color 0.2s;
-  font-family: inherit;
-}
-.search-input::placeholder { color: var(--muted); }
-.search-input:focus { border-color: rgba(155,138,251,0.4); }
-.search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--muted); }
-.filter-pill {
-  padding: 6px 11px; border-radius: 7px; border: 1px solid var(--border);
-  font-size: 0.7rem; font-weight: 500; color: var(--muted);
-  cursor: pointer; transition: all 0.15s; white-space: nowrap;
-  background: transparent; font-family: inherit;
-}
-.filter-pill:hover { border-color: var(--border2); color: var(--text); }
-.filter-pill.active { background: rgba(155,138,251,0.1); border-color: rgba(155,138,251,0.3); color: var(--purple); }
-
-/* ── PROGRESS BAR ─────────────────────────── */
-.pbar { height: 3px; background: var(--bg2); border-radius: 10px; overflow: hidden; margin-top: 6px; }
-.pbar-fill { height: 100%; border-radius: 10px; transition: width 0.8s cubic-bezier(.4,0,.2,1); }
-
-/* ── SEQUENCE DOTS ────────────────────────── */
-.seq-wrap { display: flex; align-items: center; gap: 0; }
+/* ── SEQUENCE TRACKER ─────────────────────── */
+.seq-wrap { display: flex; align-items: center; }
 .seq-dot {
   width: 22px; height: 22px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.55rem; font-weight: 700;
-  border: 1.5px solid var(--border); color: var(--muted);
-  transition: all 0.3s; flex-shrink: 0; position: relative; z-index: 1;
+  font-size: 0.55rem; font-weight: 700; flex-shrink: 0;
+  background: var(--bg); color: var(--muted); border: 1.5px solid var(--border2);
 }
-.seq-dot.done    { background: rgba(155,138,251,0.15); border-color: var(--purple); color: var(--purple); }
-.seq-dot.current { background: var(--purple); border-color: var(--purple); color: white; box-shadow: 0 0 8px rgba(155,138,251,0.5); }
-.seq-line { flex: 1; height: 1.5px; background: var(--border); margin: 0 1px; }
-.seq-line.done { background: var(--purple); opacity: 0.4; }
+.seq-dot.done { background: #111827; color: #fff; border-color: #111827; }
+.seq-dot.current { background: var(--green); color: #fff; border-color: var(--green); }
+.seq-line { flex: 1; height: 2px; background: var(--border2); min-width: 6px; }
+.seq-line.done { background: #111827; }
 
-/* ── MODAL ────────────────────────────────── */
-.modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 200;
-  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-  align-items: center; justify-content: center; padding: 20px;
+/* ── TABLE ────────────────────────────────── */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th { text-align: left; font-size: 0.65rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px; background: var(--bg); border-bottom: 1px solid var(--border); cursor: pointer; }
+.data-table th:hover { color: var(--black); }
+.data-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 0.75rem; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr { cursor: pointer; transition: background 0.1s; }
+.data-table tbody tr:hover { background: var(--bg); }
+.lead-name { font-weight: 600; font-size: 0.78rem; color: var(--black); }
+.lead-id { font-size: 0.6rem; color: var(--muted); margin-top: 1px; }
+.ch-pip { display: flex; gap: 3px; }
+.ch-dot { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--border); }
+
+/* ── FILTER PILLS ─────────────────────────── */
+.filter-bar { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.filter-pill {
+  padding: 6px 14px; border-radius: 20px; font-size: 0.72rem; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border2); background: #fff;
+  color: var(--dark); transition: all 0.15s;
 }
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--surface); border: 1px solid var(--border2);
-  border-radius: 14px; width: 100%; max-width: 560px;
-  max-height: 85vh; overflow-y: auto;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-  animation: modalIn 0.25s cubic-bezier(.34,1.56,.64,1);
+.filter-pill:hover { border-color: var(--black); color: var(--black); }
+.filter-pill.active { background: var(--black); color: #fff; border-color: var(--black); }
+.search-input {
+  padding: 7px 13px; border-radius: 8px; border: 1px solid var(--border2);
+  background: #fff; font-size: 0.75rem; font-family: inherit; outline: none; color: var(--black);
+  margin-left: auto; transition: border 0.15s;
 }
-@keyframes modalIn { from{opacity:0;transform:scale(0.96)} to{opacity:1;transform:scale(1)} }
-.modal-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 20px; border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; background: var(--surface); z-index: 1;
-}
-.modal-header h3 { font-size: 0.88rem; font-weight: 700; }
-.modal-body { padding: 20px; }
-.modal-close {
-  width: 28px; height: 28px; border-radius: 7px;
-  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-  color: var(--muted); cursor: pointer; font-size: 13px;
-  display: flex; align-items: center; justify-content: center; transition: all 0.15s;
-}
-.modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+.search-input:focus { border-color: var(--black); }
+
+/* ── CONVERSATIONS ────────────────────────── */
+.convo-wrap { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding: 8px 0; }
+.msg-bubble { max-width: 80%; padding: 8px 11px; border-radius: 10px; font-size: 0.73rem; line-height: 1.5; }
+.msg-out { background: var(--black); color: #fff; border-bottom-right-radius: 3px; }
+.msg-in  { background: var(--bg); color: var(--dark); border: 1px solid var(--border); border-bottom-left-radius: 3px; }
+.msg-meta { font-size: 0.6rem; color: var(--muted); margin-top: 2px; }
 
 /* ── SIDE PANEL ───────────────────────────── */
 .side-panel {
-  display: none; position: fixed; top: 0; right: 0; bottom: 0; width: 400px;
-  background: var(--surface); border-left: 1px solid var(--border2);
-  z-index: 150; flex-direction: column;
-  box-shadow: -12px 0 40px rgba(0,0,0,0.3);
-  animation: slideIn 0.25s ease;
+  position: fixed; inset: 0 0 0 auto; width: 380px;
+  background: #fff; border-left: 1px solid var(--border);
+  box-shadow: -8px 0 30px rgba(0,0,0,0.08);
+  display: flex; flex-direction: column; z-index: 200;
+  transform: translateX(100%); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
 }
-.side-panel.open { display: flex; }
-@keyframes slideIn { from{transform:translateX(20px);opacity:0} to{transform:none;opacity:1} }
-.sp-header {
-  padding: 16px 18px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 10px;
-}
-.sp-header h3 { font-size: 0.85rem; font-weight: 700; flex: 1; }
-.sp-body { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
-.sp-close { width: 28px; height: 28px; border-radius: 7px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; }
-.sp-section-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px; }
+.side-panel.open { transform: translateX(0); }
+.sp-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.sp-close { width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--border2); background: var(--bg); cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.sp-close:hover { background: var(--black); color: #fff; border-color: var(--black); }
+.sp-header h3 { flex: 1; font-size: 0.9rem; font-weight: 800; }
+.sp-body { flex: 1; overflow-y: auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 18px; }
+.sp-section-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px; }
 .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.info-item { background: var(--bg2); border-radius: 8px; padding: 10px; }
-.info-item .il { font-size: 0.6rem; color: var(--muted); margin-bottom: 3px; }
-.info-item .iv { font-size: 0.78rem; font-weight: 600; }
-.convo-wrap { display: flex; flex-direction: column; gap: 8px; }
-.msg-bubble {
-  max-width: 85%; padding: 8px 11px; border-radius: 10px;
-  font-size: 0.73rem; line-height: 1.5;
-}
-.msg-out { align-self: flex-end; background: rgba(155,138,251,0.15); border-bottom-right-radius: 3px; }
-.msg-in  { align-self: flex-start; background: var(--bg2); border-bottom-left-radius: 3px; }
-.msg-meta { font-size: 0.58rem; color: var(--muted); margin-top: 2px; }
-.sp-actions { padding: 14px 18px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
-.sp-actions .sp-btn {
-  flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--border);
-  font-size: 0.72rem; font-weight: 600; cursor: pointer; text-align: center;
-  background: transparent; color: var(--light); transition: all 0.15s; font-family: inherit;
-}
-.sp-actions .sp-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
-.sp-actions .sp-btn.primary { background: rgba(155,138,251,0.15); color: var(--purple); border-color: rgba(155,138,251,0.3); }
-.sp-actions .sp-btn.primary:hover { background: rgba(155,138,251,0.25); }
+.info-item { background: var(--bg); border-radius: 8px; padding: 9px 11px; }
+.il { font-size: 0.6rem; color: var(--muted); font-weight: 600; margin-bottom: 3px; }
+.iv { font-size: 0.73rem; font-weight: 600; color: var(--black); }
+.sp-actions { padding: 14px 18px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sp-btn { padding: 9px; border-radius: 8px; border: 1px solid var(--border2); background: #fff; color: var(--dark); font-size: 0.72rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; text-align: center; }
+.sp-btn:hover { border-color: var(--black); background: var(--bg); }
+.sp-btn.primary { background: var(--black); color: #fff; border-color: var(--black); grid-column: span 2; }
+.sp-btn.primary:hover { background: var(--dark); }
 
-/* ── CHANNEL CARD ─────────────────────────── */
-.ch-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; align-items: center; gap: 12px; transition: all 0.15s; cursor: pointer; }
-.ch-card:hover { border-color: var(--border2); }
-.ch-icon-wrap { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
-.ch-info { flex: 1; }
-.ch-name { font-size: 0.8rem; font-weight: 700; }
-.ch-sub { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
-.ch-toggle {
-  width: 36px; height: 20px; border-radius: 10px; background: var(--bg2);
-  border: 1px solid var(--border); cursor: pointer; position: relative;
-  transition: all 0.25s; flex-shrink: 0;
-}
-.ch-toggle.on { background: var(--purple); border-color: var(--purple); }
-.ch-toggle::after {
-  content: ''; position: absolute; top: 2px; left: 2px;
-  width: 14px; height: 14px; border-radius: 50%; background: white;
-  transition: transform 0.25s; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-}
+/* ── CHANNEL CARDS ────────────────────────── */
+.ch-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 10px; border: 1px solid var(--border); background: #fff; margin-bottom: 8px; }
+.ch-icon-wrap { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.ch-name { font-size: 0.82rem; font-weight: 700; color: var(--black); }
+.ch-sub { font-size: 0.66rem; color: var(--muted); margin-top: 2px; }
+.ch-toggle { width: 38px; height: 22px; border-radius: 11px; background: var(--border2); margin-left: auto; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
+.ch-toggle::after { content:''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.ch-toggle.on { background: var(--black); }
 .ch-toggle.on::after { transform: translateX(16px); }
 
-/* ── ANALYTICS ────────────────────────────── */
+/* ── CHART WRAP ───────────────────────────── */
 .chart-wrap { padding: 16px; }
 
-/* ── CONFIG ───────────────────────────────── */
-.config-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 13px 0; border-bottom: 1px solid var(--border);
-}
+/* ── CONFIG / PROFILE ─────────────────────── */
+.config-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 12px; }
 .config-row:last-child { border-bottom: none; }
-.config-label { font-size: 0.78rem; font-weight: 600; }
+.config-label { font-size: 0.78rem; font-weight: 600; color: var(--black); }
 .config-sub { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
 .config-input {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 7px;
-  padding: 6px 10px; font-size: 0.75rem; color: var(--text);
-  outline: none; font-family: inherit; width: 200px; transition: border-color 0.2s;
+  padding: 7px 11px; border-radius: 7px; border: 1px solid var(--border2);
+  background: var(--bg); font-size: 0.78rem; font-family: inherit; outline: none;
+  color: var(--black); min-width: 180px; transition: border 0.15s;
 }
-.config-input:focus { border-color: rgba(155,138,251,0.4); }
+.config-input:focus { border-color: var(--black); background: #fff; }
 .config-select {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 7px;
-  padding: 6px 10px; font-size: 0.75rem; color: var(--text);
-  outline: none; font-family: inherit; cursor: pointer;
+  padding: 7px 11px; border-radius: 7px; border: 1px solid var(--border2);
+  background: var(--bg); font-size: 0.78rem; font-family: inherit; outline: none;
+  color: var(--black); min-width: 180px; cursor: pointer;
 }
+.save-btn { padding: 9px 22px; border-radius: 8px; background: var(--black); color: #fff; border: none; font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: opacity 0.15s; margin-top: 16px; }
+.save-btn:hover { opacity: 0.85; }
+
+/* ── PROFILE AVATAR ───────────────────────── */
+.profile-avatar-wrap { display: flex; flex-direction: column; align-items: center; padding: 24px; border-bottom: 1px solid var(--border); }
+.profile-avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--black); display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 10px; }
+.profile-name { font-size: 1rem; font-weight: 800; color: var(--black); }
+.profile-role { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
 
 /* ── LOGS ─────────────────────────────────── */
-.log-line { padding: 7px 14px; border-bottom: 1px solid rgba(255,255,255,0.025); font-size: 0.7rem; font-family: 'Courier New', monospace; display: flex; gap: 10px; align-items: baseline; }
-.log-time { color: var(--muted); flex-shrink: 0; font-size: 0.65rem; }
-.log-level { font-size: 0.6rem; font-weight: 700; flex-shrink: 0; }
-.ll-info { color: var(--blue); }
-.ll-warn { color: var(--yellow); }
-.ll-success { color: var(--green); }
-.ll-error { color: var(--red); }
+.log-line { padding: 8px 16px; border-bottom: 1px solid var(--border); font-size: 0.7rem; font-family: 'SF Mono', 'Fira Code', monospace; display: flex; gap: 10px; align-items: baseline; }
+.log-line:hover { background: var(--bg); }
+.log-time { color: var(--muted); flex-shrink: 0; }
+.log-level { font-weight: 700; flex-shrink: 0; padding: 1px 6px; border-radius: 4px; }
+.ll-info    { background: rgba(59,130,246,0.1);  color: #2563eb; }
+.ll-success { background: rgba(16,185,129,0.1);  color: #059669; }
+.ll-warn    { background: rgba(245,158,11,0.1);  color: #d97706; }
+.ll-error   { background: rgba(239,68,68,0.1);   color: #dc2626; }
+
+/* ── MODAL ────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+  z-index: 300; display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 16px; width: 520px; max-width: 92vw; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.modal-header { padding: 20px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modal-header h3 { font-size: 0.92rem; font-weight: 800; }
+.modal-close { width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--border2); background: var(--bg); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.modal-close:hover { background: var(--black); color: #fff; border-color: var(--black); }
+.modal-body { padding: 20px 22px; overflow-y: auto; }
+.at-stat { background: var(--bg); border-radius: 9px; padding: 14px; text-align: center; border: 1px solid var(--border); }
+.at-stat .v { font-size: 1.3rem; font-weight: 800; margin-bottom: 3px; }
+.at-stat .l { font-size: 0.62rem; color: var(--muted); }
 
 /* ── TOAST ────────────────────────────────── */
 #toast {
-  position: fixed; bottom: 20px; right: 20px; z-index: 500;
-  background: var(--surface2); border: 1px solid var(--border2);
-  border-radius: 9px; padding: 10px 16px;
-  font-size: 0.76rem; font-weight: 500;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  opacity: 0; transform: translateY(8px);
-  transition: all 0.3s; pointer-events: none; max-width: 300px;
+  position: fixed; bottom: 24px; right: 24px; z-index: 1000;
+  background: var(--black); color: #fff; padding: 10px 18px;
+  border-radius: 10px; font-size: 0.78rem; font-weight: 600;
+  transform: translateY(10px); opacity: 0; transition: all 0.25s;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2); pointer-events: none;
 }
-#toast.show { opacity: 1; transform: translateY(0); }
-
-/* ── SCROLLBAR ────────────────────────────── */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
-
-/* ── DIVIDER ──────────────────────────────── */
-.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+#toast.show { transform: translateY(0); opacity: 1; }
 </style>
 </head>
 <body>
+<div class="app">
 
-<!-- ════════════════════════════════════════ SIDEBAR -->
+<!-- ════════ SIDEBAR -->
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="sb-mark">🤖</div>
-    <div class="sb-brand">AgentOS <span>Loan Nurture System</span></div>
+    <div class="sb-brand">AgentOS<span>Loan Nurture System</span></div>
   </div>
   <nav class="sb-nav">
-    <div class="sb-section">Overview</div>
-    <div class="nav-item active" onclick="navTo('dashboard',this)">
-      <span class="n-icon">⊞</span> Dashboard
-    </div>
-    <div class="nav-item" onclick="navTo('leads',this)">
-      <span class="n-icon">👥</span> All Leads
-      <span class="n-badge" id="nb-leads">7</span>
-    </div>
-    <div class="nav-item" onclick="navTo('agents',this)">
-      <span class="n-icon">🤖</span> Agents
-    </div>
-    <div class="nav-item" onclick="navTo('conversations',this)">
-      <span class="n-icon">💬</span> Conversations
-      <span class="n-badge" id="nb-conv">3</span>
-    </div>
-    <div class="sb-section">Channels</div>
-    <div class="nav-item" onclick="navTo('channels',this)">
-      <span class="n-icon">📡</span> All Channels
-    </div>
-    <div class="nav-item" onclick="navTo('analytics',this)">
-      <span class="n-icon">📊</span> Analytics
-    </div>
-    <div class="sb-section">System</div>
-    <div class="nav-item" onclick="navTo('config',this)">
-      <span class="n-icon">⚙</span> Config
-    </div>
-    <div class="nav-item" onclick="navTo('logs',this)">
-      <span class="n-icon">📋</span> System Logs
-    </div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item active" onclick="navTo('dashboard',this)"><span class="n-icon">🏠</span> Dashboard</div>
+    <div class="nav-item" onclick="navTo('leads',this)"><span class="n-icon">👥</span> All Leads <span class="n-badge" id="nb-leads">7</span></div>
+    <div class="nav-item" onclick="navTo('agents',this)"><span class="n-icon">🤖</span> Agents</div>
+    <div class="nav-item" onclick="navTo('conversations',this)"><span class="n-icon">💬</span> Conversations <span class="n-badge" id="nb-conv">3</span></div>
+
+    <div class="sb-section">Reports</div>
+    <div class="nav-item" onclick="navTo('channels',this)"><span class="n-icon">📡</span> Channels</div>
+    <div class="nav-item" onclick="navTo('analytics',this)"><span class="n-icon">📊</span> Analytics</div>
+    <div class="nav-item" onclick="navTo('logs',this)"><span class="n-icon">📋</span> System Logs</div>
+
+    <div class="sb-section">Settings</div>
+    <div class="nav-item" onclick="navTo('config',this)"><span class="n-icon">⚙️</span> Config</div>
+    <div class="nav-item" onclick="navTo('profile',this)"><span class="n-icon">👤</span> My Profile</div>
   </nav>
   <div class="sb-footer">
-    <div class="online-dot"></div>
-    <span class="sb-footer-text">System <strong>Online</strong> · Flask :5000</span>
+    <div class="sb-avatar" onclick="navTo('profile',document.querySelector('.nav-item:last-child'))">👤</div>
+    <div class="sb-footer-text"><strong>peyush</strong>Admin</div>
+    <div class="online-dot" title="System online"></div>
   </div>
 </aside>
 
-<!-- ════════════════════════════════════════ MAIN -->
+<!-- ════════ MAIN -->
 <div class="main">
+  <!-- TOPBAR -->
   <div class="topbar">
     <div>
-      <div class="topbar-title" id="page-title">Dashboard</div>
+      <div class="topbar-title" id="page-title">🏠 Dashboard</div>
       <div class="topbar-sub" id="page-sub">Real-time overview of all agents and leads</div>
     </div>
     <div class="topbar-right">
       <div class="live-tag">LIVE</div>
-      <div class="clock" id="clock">—</div>
-      <button class="tb-btn" onclick="showToast('🔄 Refreshing data…')">↻ Refresh</button>
-      <button class="tb-btn primary" onclick="openModal('newLead')">+ New Lead</button>
+      <div class="clock" id="clock">--:--:--</div>
+      <button class="tb-btn" onclick="navTo('logs',document.querySelector('[onclick*=logs]'))">📋 Logs</button>
+      <button class="tb-btn primary" onclick="document.getElementById('newLeadModal').classList.add('open')">➕ Add Lead</button>
     </div>
   </div>
 
-  <!-- ══ PAGE: DASHBOARD ══════════════════════ -->
+  <!-- ══ PAGE: DASHBOARD ════════════════════ -->
   <div class="page active" id="page-dashboard">
-    <div style="display:flex;flex-direction:column;gap:14px">
 
-      <!-- Stat tiles -->
-      <div class="g4 mb14">
-        <div class="stat-tile" style="--accent-color:var(--purple)" onclick="navTo('leads', document.querySelector('[onclick*=leads]'))">
-          <span class="st-icon">👥</span>
-          <div class="st-label">Total Leads</div>
-          <div class="st-value" id="sv-total">7</div>
-          <div class="st-sub" id="ss-total">6 in pipeline</div>
-        </div>
-        <div class="stat-tile" style="--accent-color:var(--green)" onclick="navTo('leads', document.querySelector('[onclick*=leads]'))">
-          <span class="st-icon">✅</span>
-          <div class="st-label">Qualified</div>
-          <div class="st-value" id="sv-qual">1</div>
-          <div class="st-sub">14% conversion rate</div>
-        </div>
-        <div class="stat-tile" style="--accent-color:var(--yellow)">
-          <span class="st-icon">💬</span>
-          <div class="st-label">Messages Sent</div>
-          <div class="st-value" id="sv-msgs">42</div>
-          <div class="st-sub">Across all channels</div>
-        </div>
-        <div class="stat-tile" style="--accent-color:var(--blue)" onclick="navTo('channels', document.querySelector('[onclick*=channels]'))">
-          <span class="st-icon">📞</span>
-          <div class="st-label">Voice Calls</div>
-          <div class="st-value" id="sv-calls">14</div>
-          <div class="st-sub">via Bland AI</div>
-        </div>
+    <!-- Stat Tiles -->
+    <div class="g4 mb22">
+      <div class="stat-tile">
+        <div class="st-emoji">👥</div>
+        <div class="st-val" id="sv-total">7</div>
+        <div class="st-label">Total Leads</div>
+        <div class="st-change st-up">↑ 2 today</div>
       </div>
-
-      <!-- Agent cards -->
-      <div class="g3 mb14">
-        <div class="agent-tile is-active" onclick="openAgentModal('manager')">
-          <div class="at-top">
-            <div class="at-icon" style="background:rgba(155,138,251,0.12)">🧠</div>
-            <span class="tag tag-green">● Active</span>
-          </div>
-          <div class="at-name">Manager Agent</div>
-          <div class="at-role">Orchestrator · Classifies & Routes</div>
-          <div class="at-stats">
-            <div class="at-stat"><div class="v" style="color:var(--purple)" id="m-routed">7</div><div class="l">Routed</div></div>
-            <div class="at-stat"><div class="v" style="color:var(--green)"  id="m-handoff">1</div><div class="l">Handoffs</div></div>
-          </div>
-          <div class="at-task"><div class="at-task-label">Now</div><span id="task-manager">Monitoring webhook for new leads…</span></div>
-        </div>
-        <div class="agent-tile is-busy" onclick="openAgentModal('opener')">
-          <div class="at-top">
-            <div class="at-icon" style="background:rgba(52,211,153,0.12)">⚡</div>
-            <span class="tag tag-yellow">● Firing</span>
-          </div>
-          <div class="at-name">Agent 1 — Opener</div>
-          <div class="at-role">Speed Agent · Fires in &lt;90s</div>
-          <div class="at-stats">
-            <div class="at-stat"><div class="v" style="color:var(--green)"  id="o-fired">6</div><div class="l">Fired</div></div>
-            <div class="at-stat"><div class="v" style="color:var(--yellow)" id="o-replied">11</div><div class="l">Replies</div></div>
-          </div>
-          <div class="at-task"><div class="at-task-label">Now</div><span id="task-opener">Sending SMS + Email to James Wilson…</span></div>
-        </div>
-        <div class="agent-tile is-active" onclick="openAgentModal('nurturer')">
-          <div class="at-top">
-            <div class="at-icon" style="background:rgba(96,165,250,0.12)">🌱</div>
-            <span class="tag tag-blue">● Running</span>
-          </div>
-          <div class="at-name">Agent 2 — Nurturer</div>
-          <div class="at-role">14-Day Follow-Up Sequence</div>
-          <div class="at-stats">
-            <div class="at-stat"><div class="v" style="color:var(--blue)"   id="n-active">4</div><div class="l">Active</div></div>
-            <div class="at-stat"><div class="v" style="color:var(--purple)" id="n-sent">22</div><div class="l">Sent</div></div>
-          </div>
-          <div class="at-task"><div class="at-task-label">Now</div><span id="task-nurturer">Day 5 email queued for Sarah Chen…</span></div>
-        </div>
+      <div class="stat-tile">
+        <div class="st-emoji">📨</div>
+        <div class="st-val" id="sv-msgs">58</div>
+        <div class="st-label">Messages Sent</div>
+        <div class="st-change st-up">↑ 12 today</div>
       </div>
-
-      <!-- Feed + Channel perf -->
-      <div class="g-auto mb14">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-header-left">
-              <h3>Live Activity</h3>
-              <p>Real-time agent actions</p>
-            </div>
-            <span class="tag tag-green" id="feed-count">12 events</span>
-          </div>
-          <div class="feed" id="activityFeed"></div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <div class="card-header-left"><h3>Channels</h3><p>Today's performance</p></div>
-            <span class="tag tag-purple">Live</span>
-          </div>
-          <div class="card-body" style="display:flex;flex-direction:column;gap:12px">
-            <div id="channelBars"></div>
-            <canvas id="miniChart" height="100"></canvas>
-          </div>
-        </div>
+      <div class="stat-tile">
+        <div class="st-emoji">📞</div>
+        <div class="st-val" id="sv-calls">14</div>
+        <div class="st-label">Voice Calls</div>
+        <div class="st-change st-neutral">58% answered</div>
       </div>
+      <div class="stat-tile">
+        <div class="st-emoji">🎯</div>
+        <div class="st-val" id="sv-qual">1</div>
+        <div class="st-label">Qualified Today</div>
+        <div class="st-change st-up">14% conversion</div>
+      </div>
+    </div>
 
-      <!-- Sequence tracker -->
-      <div class="card mb14">
+    <!-- Agent Cards -->
+    <div class="g3 mb22">
+      <div class="agent-card" onclick="openAgentModal('manager')">
+        <div class="ac-emoji">🧠</div>
+        <div class="ac-title">Manager Agent</div>
+        <div class="ac-sub">Classifies leads, orchestrates agents, detects qualification signals</div>
+        <div class="ac-task" id="task-manager">⏳ Monitoring webhook — waiting for next lead…</div>
+        <div class="ac-stats">
+          <div class="ac-stat"><div class="ac-stat-val" id="m-routed">7</div><div class="ac-stat-lbl">Routed</div></div>
+          <div class="ac-stat"><div class="ac-stat-val" id="m-handoff">1</div><div class="ac-stat-lbl">Handoffs</div></div>
+          <div class="ac-stat"><div class="ac-stat-val">1.2s</div><div class="ac-stat-lbl">Avg Classify</div></div>
+        </div>
+        <button class="ac-btn">🔍 View Details</button>
+      </div>
+      <div class="agent-card" onclick="openAgentModal('opener')">
+        <div class="ac-emoji">⚡</div>
+        <div class="ac-title">Opener Agent</div>
+        <div class="ac-sub">Fires SMS + Email across all channels within 90 seconds of lead arrival</div>
+        <div class="ac-task" id="task-opener">✅ Last opened: James Wilson — 2 min ago</div>
+        <div class="ac-stats">
+          <div class="ac-stat"><div class="ac-stat-val">6</div><div class="ac-stat-lbl">Fired</div></div>
+          <div class="ac-stat"><div class="ac-stat-val">18</div><div class="ac-stat-lbl">SMS</div></div>
+          <div class="ac-stat"><div class="ac-stat-val">11</div><div class="ac-stat-lbl">Replies</div></div>
+        </div>
+        <button class="ac-btn">🔍 View Details</button>
+      </div>
+      <div class="agent-card" onclick="openAgentModal('nurturer')">
+        <div class="ac-emoji">🌱</div>
+        <div class="ac-title">Nurturer Agent</div>
+        <div class="ac-sub">14-day follow-up sequence — 8 touchpoints per lead via SMS + Email</div>
+        <div class="ac-task" id="task-nurturer">📅 Day 5 email queued for Sarah Chen…</div>
+        <div class="ac-stats">
+          <div class="ac-stat"><div class="ac-stat-val" id="n-active">4</div><div class="ac-stat-lbl">Active</div></div>
+          <div class="ac-stat"><div class="ac-stat-val">22</div><div class="ac-stat-lbl">Sent</div></div>
+          <div class="ac-stat"><div class="ac-stat-val">3</div><div class="ac-stat-lbl">Complete</div></div>
+        </div>
+        <button class="ac-btn">🔍 View Details</button>
+      </div>
+    </div>
+
+    <!-- Bottom Row -->
+    <div class="g-auto">
+      <!-- Activity Feed -->
+      <div class="card">
         <div class="card-header">
-          <div class="card-header-left"><h3>14-Day Sequence Tracker</h3><p>Follow-up progress per lead</p></div>
-          <span class="tag tag-blue" id="seq-tag">4 active</span>
+          <div class="card-header-left"><h3>⚡ Live Activity Feed</h3><p id="feed-count">0 events</p></div>
+          <button class="tb-btn" onclick="navTo('logs',document.querySelector('[onclick*=logs]'))">View All Logs</button>
         </div>
-        <div class="card-body" style="display:flex;flex-direction:column;gap:10px" id="seqTracker"></div>
+        <div class="card-body" style="max-height:340px;overflow-y:auto" id="activityFeed"></div>
       </div>
 
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <!-- Channel Bars -->
+        <div class="card">
+          <div class="card-header"><div class="card-header-left"><h3>📡 Channels Today</h3></div></div>
+          <div class="card-body" id="channelBars"></div>
+        </div>
+        <!-- Mini Chart -->
+        <div class="card">
+          <div class="card-header"><div class="card-header-left"><h3>📈 Messages / Hour</h3></div></div>
+          <div class="chart-wrap"><canvas id="miniChart" height="130"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sequence Tracker -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-header"><div class="card-header-left"><h3>🗓 14-Day Sequence Tracker</h3><p>Active nurture sequences</p></div></div>
+      <div class="card-body" id="seqTracker" style="display:flex;flex-direction:column;gap:10px"></div>
     </div>
   </div>
 
-  <!-- ══ PAGE: LEADS ══════════════════════════ -->
+  <!-- ══ PAGE: LEADS ════════════════════════ -->
   <div class="page" id="page-leads">
     <div class="card">
-      <div class="filter-bar">
-        <div class="search-wrap">
-          <span class="search-icon">🔍</span>
-          <input class="search-input" id="leadSearch" placeholder="Search by name, email, type…" oninput="filterLeads()"/>
-        </div>
-        <button class="filter-pill active" onclick="setFilter('all',this)">All (7)</button>
-        <button class="filter-pill" onclick="setFilter('purchase',this)">Purchase</button>
-        <button class="filter-pill" onclick="setFilter('refinance',this)">Refinance</button>
-        <button class="filter-pill" onclick="setFilter('opener',this)">Opener Active</button>
-        <button class="filter-pill" onclick="setFilter('nurture',this)">Nurturing</button>
-        <button class="filter-pill" onclick="setFilter('qualified',this)">Qualified</button>
+      <div class="card-header">
+        <div class="card-header-left"><h3>👥 All Leads</h3><p>Click a row to view details</p></div>
+        <button class="tb-btn primary" onclick="document.getElementById('newLeadModal').classList.add('open')">➕ Add Lead</button>
       </div>
-      <div class="tbl-wrap">
-        <table>
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
+        <div class="filter-bar">
+          <div class="filter-pill active" onclick="setFilter('all',this)">🔘 All</div>
+          <div class="filter-pill" onclick="setFilter('purchase',this)">🏠 Purchase</div>
+          <div class="filter-pill" onclick="setFilter('refinance',this)">🔄 Refinance</div>
+          <div class="filter-pill" onclick="setFilter('opener',this)">⚡ Opener</div>
+          <div class="filter-pill" onclick="setFilter('nurture',this)">🌱 Nurturing</div>
+          <div class="filter-pill" onclick="setFilter('qualified',this)">🎯 Qualified</div>
+          <input class="search-input" id="leadSearch" placeholder="🔍 Search leads…" oninput="filterLeads()"/>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
           <thead>
             <tr>
-              <th onclick="sortLeads('name')">Lead ↕</th>
-              <th onclick="sortLeads('type')">Type ↕</th>
-              <th>Source</th>
-              <th onclick="sortLeads('status')">Stage ↕</th>
-              <th>Channels</th>
-              <th>Agent</th>
-              <th>Last Activity</th>
-              <th>Day</th>
+              <th onclick="sortLeads('name')">👤 Name ↕</th>
+              <th>🏷 Type</th>
+              <th>📍 Source</th>
+              <th>🔖 Status</th>
+              <th>📡 Channels</th>
+              <th onclick="sortLeads('agent')">🤖 Agent ↕</th>
+              <th>🕐 Created</th>
+              <th>📅 Day</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -618,143 +540,217 @@ tbody td { padding: 10px 14px; vertical-align: middle; }
     </div>
   </div>
 
-  <!-- ══ PAGE: AGENTS ═════════════════════════ -->
+  <!-- ══ PAGE: AGENTS ═══════════════════════ -->
   <div class="page" id="page-agents">
     <div class="g3">
-      <div class="agent-tile is-active" onclick="openAgentModal('manager')" style="cursor:pointer">
-        <div class="at-top"><div class="at-icon" style="background:rgba(155,138,251,0.12)">🧠</div><span class="tag tag-green">● Active</span></div>
-        <div class="at-name">Manager Agent</div>
-        <div class="at-role">Classifies leads with Claude · Routes to agents · Detects qualification · Flags LO handoff</div>
-        <div class="at-stats">
-          <div class="at-stat"><div class="v" style="color:var(--purple)">7</div><div class="l">Leads Routed</div></div>
-          <div class="at-stat"><div class="v" style="color:var(--green)">1</div><div class="l">LO Handoffs</div></div>
-          <div class="at-stat"><div class="v" style="color:var(--blue)">94%</div><div class="l">Accuracy</div></div>
-          <div class="at-stat"><div class="v" style="color:var(--yellow)">1.2s</div><div class="l">Avg Response</div></div>
+      <div class="agent-card" onclick="openAgentModal('manager')">
+        <div class="ac-emoji">🧠</div>
+        <div class="ac-title">Manager Agent</div>
+        <div class="ac-sub">The brain of the system. Classifies every lead using Claude AI, queues the Opener, schedules the Nurturer, monitors all replies, and triggers LO handoff when a lead qualifies.</div>
+        <div class="ac-task">Model: claude-sonnet-4-6 · Avg classification: 1.2s</div>
+        <div class="ac-stats">
+          <div class="ac-stat"><div class="ac-stat-val" id="m-routed2">7</div><div class="ac-stat-lbl">Leads Routed</div></div>
+          <div class="ac-stat"><div class="ac-stat-val">1</div><div class="ac-stat-lbl">Handoffs</div></div>
+          <div class="ac-stat"><div class="ac-stat-val">94%</div><div class="ac-stat-lbl">Accuracy</div></div>
         </div>
-        <div class="at-task"><div class="at-task-label">Responsibilities</div>Receives GHL webhook → classifies lead (purchase/refi) → fires Opener timer → schedules Nurturer → monitors replies → detects qualification signals → alerts LO</div>
+        <button class="ac-btn">🔍 Full Details →</button>
       </div>
-      <div class="agent-tile is-busy" onclick="openAgentModal('opener')" style="cursor:pointer">
-        <div class="at-top"><div class="at-icon" style="background:rgba(52,211,153,0.12)">⚡</div><span class="tag tag-yellow">● Firing</span></div>
-        <div class="at-name">Agent 1 — Opener</div>
-        <div class="at-role">Multi-channel speed outreach · Fires within 90 seconds · Uses Claude for personalisation</div>
-        <div class="at-stats">
-          <div class="at-stat"><div class="v" style="color:var(--green)">6</div><div class="l">Openers Fired</div></div>
-          <div class="at-stat"><div class="v" style="color:var(--yellow)">11</div><div class="l">Replies Back</div></div>
-          <div class="at-stat"><div class="v" style="color:var(--blue)">18</div><div class="l">SMS Sent</div></div>
-          <div class="at-stat"><div class="v" style="color:var(--purple)">14</div><div class="l">Calls Made</div></div>
+      <div class="agent-card" onclick="openAgentModal('opener')">
+        <div class="ac-emoji">⚡</div>
+        <div class="ac-title">Opener Agent (Agent 1)</div>
+        <div class="ac-sub">Speed agent. Fires within 90 seconds of lead creation. Sends personalised messages across SMS and Email simultaneously, written by Claude for each lead.</div>
+        <div class="ac-task">Channels: 📱 SMS · 📧 Email · (Voice & Messenger: off)</div>
+        <div class="ac-stats">
+          <div class="ac-stat"><div class="ac-stat-val">6</div><div class="ac-stat-lbl">Openers Fired</div></div>
+          <div class="ac-stat"><div class="ac-stat-val">18</div><div class="ac-stat-lbl">SMS Sent</div></div>
+          <div class="ac-stat"><div class="ac-stat-val">15</div><div class="ac-stat-lbl">Emails Sent</div></div>
         </div>
-        <div class="at-task"><div class="at-task-label">Responsibilities</div>Generates personalised messages with Claude → sends SMS (Twilio) → Email (SendGrid) → Messenger (FB Graph API) → AI Voice Call (Bland AI)</div>
+        <button class="ac-btn">🔍 Full Details →</button>
       </div>
-      <div class="agent-tile is-active" onclick="openAgentModal('nurturer')" style="cursor:pointer">
-        <div class="at-top"><div class="at-icon" style="background:rgba(96,165,250,0.12)">🌱</div><span class="tag tag-blue">● Running</span></div>
-        <div class="at-name">Agent 2 — Nurturer</div>
-        <div class="at-role">14-day follow-up · 8 touchpoints · SMS + Email · Stops on conversion</div>
-        <div class="at-stats">
-          <div class="at-stat"><div class="v" style="color:var(--blue)">4</div><div class="l">Active Seq.</div></div>
-          <div class="at-stat"><div class="v" style="color:var(--purple)">22</div><div class="l">Msgs Sent</div></div>
-          <div class="at-stat"><div class="v" style="color:var(--green)">3</div><div class="l">Completed</div></div>
-          <div class="at-stat"><div class="v" style="color:var(--yellow)">Day 5</div><div class="l">Avg Stage</div></div>
+      <div class="agent-card" onclick="openAgentModal('nurturer')">
+        <div class="ac-emoji">🌱</div>
+        <div class="ac-title">Nurturer Agent (Agent 2)</div>
+        <div class="ac-sub">Runs a structured 14-day follow-up sequence. 8 touchpoints at strategic intervals. Each message written fresh by Claude. Auto-stops on qualification, opt-out, or DND.</div>
+        <div class="ac-task">Schedule: Day 1, 2, 3, 5, 7, 9, 11, 14</div>
+        <div class="ac-stats">
+          <div class="ac-stat"><div class="ac-stat-val">4</div><div class="ac-stat-lbl">Active</div></div>
+          <div class="ac-stat"><div class="ac-stat-val">22</div><div class="ac-stat-lbl">Sent</div></div>
+          <div class="ac-stat"><div class="ac-stat-val">3</div><div class="ac-stat-lbl">Complete</div></div>
         </div>
-        <div class="at-task"><div class="at-task-label">Responsibilities</div>Schedules 8 follow-up messages across days 1,2,3,5,7,9,11,14 → generates fresh Claude copy per step → auto-stops on qualification or unsubscribe</div>
+        <button class="ac-btn">🔍 Full Details →</button>
       </div>
     </div>
   </div>
 
-  <!-- ══ PAGE: CONVERSATIONS ══════════════════ -->
+  <!-- ══ PAGE: CONVERSATIONS ════════════════ -->
   <div class="page" id="page-conversations">
-    <div class="g2">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-header-left"><h3>Active Threads</h3><p>Click to view full conversation</p></div>
-        </div>
-        <div id="convoList" style="display:flex;flex-direction:column"></div>
+    <div class="g-auto" style="height:calc(100vh - 100px)">
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+        <div class="card-header"><div class="card-header-left"><h3>💬 Conversations</h3></div></div>
+        <div style="flex:1;overflow-y:auto" id="convoList"></div>
       </div>
-      <div class="card" id="convoView" style="display:flex;flex-direction:column;min-height:400px">
-        <div class="card-header"><div class="card-header-left"><h3>Select a conversation</h3></div></div>
-        <div style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:0.78rem">← Pick a thread to view messages</div>
+      <div class="card" id="convoView" style="display:flex;flex-direction:column;overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:0.82rem;flex-direction:column;gap:8px">
+          <div style="font-size:32px">💬</div>
+          Select a conversation to view
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ══ PAGE: CHANNELS ═══════════════════════ -->
+  <!-- ══ PAGE: CHANNELS ════════════════════ -->
   <div class="page" id="page-channels">
     <div class="g2">
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <div class="card">
-          <div class="card-header"><div class="card-header-left"><h3>Channel Status</h3><p>Toggle on/off per channel</p></div></div>
-          <div class="card-body" style="display:flex;flex-direction:column;gap:10px" id="channelToggles"></div>
+      <div>
+        <div class="card mb16">
+          <div class="card-header"><div class="card-header-left"><h3>📡 Channel Settings</h3><p>Toggle channels on/off</p></div></div>
+          <div class="card-body" id="channelToggles"></div>
         </div>
         <div class="card">
-          <div class="card-header"><div class="card-header-left"><h3>Response Rates</h3></div></div>
-          <div class="card-body" style="display:flex;flex-direction:column;gap:10px" id="channelRates"></div>
+          <div class="card-header"><div class="card-header-left"><h3>📊 Response Rates</h3></div></div>
+          <div class="card-body" id="channelRates" style="display:flex;flex-direction:column;gap:12px"></div>
         </div>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-header-left"><h3>Activity Over Time</h3></div></div>
+        <div class="card-header"><div class="card-header-left"><h3>📈 Messages Sent This Week</h3></div></div>
         <div class="chart-wrap"><canvas id="channelChart" height="280"></canvas></div>
       </div>
     </div>
   </div>
 
-  <!-- ══ PAGE: ANALYTICS ══════════════════════ -->
+  <!-- ══ PAGE: ANALYTICS ════════════════════ -->
   <div class="page" id="page-analytics">
-    <div class="g2 mb14">
-      <div class="card"><div class="card-header"><div class="card-header-left"><h3>Messages Per Day</h3></div></div><div class="chart-wrap"><canvas id="analyticsChart1" height="200"></canvas></div></div>
-      <div class="card"><div class="card-header"><div class="card-header-left"><h3>Lead Status Breakdown</h3></div></div><div class="chart-wrap"><canvas id="analyticsChart2" height="200"></canvas></div></div>
+    <div class="g2 mb16">
+      <div class="card"><div class="card-header"><div class="card-header-left"><h3>📅 Messages Per Day</h3></div></div><div class="chart-wrap"><canvas id="analyticsChart1" height="200"></canvas></div></div>
+      <div class="card"><div class="card-header"><div class="card-header-left"><h3>🎯 Lead Status Breakdown</h3></div></div><div class="chart-wrap"><canvas id="analyticsChart2" height="200"></canvas></div></div>
     </div>
     <div class="card">
-      <div class="card-header"><div class="card-header-left"><h3>Conversion Funnel</h3></div></div>
+      <div class="card-header"><div class="card-header-left"><h3>🔽 Conversion Funnel</h3></div></div>
       <div class="card-body" id="funnelChart"></div>
     </div>
   </div>
 
-  <!-- ══ PAGE: CONFIG ═════════════════════════ -->
+  <!-- ══ PAGE: CONFIG ═══════════════════════ -->
   <div class="page" id="page-config">
     <div class="g2">
-      <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:16px">
         <div class="card">
-          <div class="card-header"><div class="card-header-left"><h3>Loan Officer Details</h3></div></div>
+          <div class="card-header"><div class="card-header-left"><h3>🏢 Loan Officer Details</h3><p>Shown in all outbound messages</p></div></div>
           <div class="card-body">
-            <div class="config-row"><div><div class="config-label">LO Name</div><div class="config-sub">Shown in all messages</div></div><input class="config-input" value="Michael Davis" oninput="showToast('⚙ Config updated')"/></div>
-            <div class="config-row"><div><div class="config-label">Company</div></div><input class="config-input" value="Bright Path Lending" oninput="showToast('⚙ Config updated')"/></div>
-            <div class="config-row"><div><div class="config-label">NMLS Number</div></div><input class="config-input" value="12345678" oninput="showToast('⚙ Config updated')"/></div>
-            <div class="config-row"><div><div class="config-label">Phone</div></div><input class="config-input" value="+1-555-000-0000" oninput="showToast('⚙ Config updated')"/></div>
-            <div class="config-row"><div><div class="config-label">Timezone</div></div><select class="config-select" onchange="showToast('⚙ Timezone saved')"><option selected>America/Chicago</option><option>America/New_York</option><option>America/Los_Angeles</option><option>America/Denver</option></select></div>
+            <div class="config-row"><div><div class="config-label">👤 LO Name</div></div><input class="config-input" value="Uday Yewale" oninput="showToast('⚙️ Config updated')"/></div>
+            <div class="config-row"><div><div class="config-label">🏢 Company</div></div><input class="config-input" value="YZX - Headd Media" oninput="showToast('⚙️ Config updated')"/></div>
+            <div class="config-row"><div><div class="config-label">🪪 NMLS Number</div></div><input class="config-input" value="12345678" oninput="showToast('⚙️ Config updated')"/></div>
+            <div class="config-row"><div><div class="config-label">📞 Phone</div></div><input class="config-input" value="+919022303987" oninput="showToast('⚙️ Config updated')"/></div>
+            <div class="config-row"><div><div class="config-label">🌍 Timezone</div></div><select class="config-select" onchange="showToast('⚙️ Timezone saved')"><option selected>America/Chicago</option><option>America/New_York</option><option>America/Los_Angeles</option><option>America/Denver</option></select></div>
           </div>
         </div>
         <div class="card">
-          <div class="card-header"><div class="card-header-left"><h3>Timing</h3></div></div>
+          <div class="card-header"><div class="card-header-left"><h3>⏱ Timing</h3></div></div>
           <div class="card-body">
-            <div class="config-row"><div><div class="config-label">Opener Delay</div><div class="config-sub">Seconds after lead creation</div></div><input class="config-input" type="number" value="90" oninput="showToast('⚙ Timing updated')"/></div>
-            <div class="config-row"><div><div class="config-label">Claude Model</div><div class="config-sub">AI model for all agents</div></div><select class="config-select" onchange="showToast('⚙ Model updated')"><option selected>claude-sonnet-4-6</option><option>claude-opus-4-6</option><option>claude-haiku-4-5-20251001</option></select></div>
+            <div class="config-row"><div><div class="config-label">⚡ Opener Delay</div><div class="config-sub">Seconds after lead creation</div></div><input class="config-input" type="number" value="90" oninput="showToast('⚙️ Timing updated')"/></div>
+            <div class="config-row"><div><div class="config-label">🤖 Claude Model</div><div class="config-sub">AI model for all agents</div></div><select class="config-select" onchange="showToast('⚙️ Model updated')"><option selected>claude-sonnet-4-6</option><option>claude-opus-4-6</option><option>claude-haiku-4-5-20251001</option></select></div>
           </div>
         </div>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-header-left"><h3>API Keys</h3><p>Stored in .env — not saved here</p></div></div>
+        <div class="card-header"><div class="card-header-left"><h3>🔑 API Keys</h3><p>Update in Railway environment variables</p></div></div>
         <div class="card-body">
-          <div class="config-row"><div><div class="config-label">Anthropic API</div></div><input class="config-input" type="password" value="sk-ant-●●●●●●●●" oninput="showToast('⚠ Update .env file directly')"/></div>
-          <div class="config-row"><div><div class="config-label">GoHighLevel</div></div><input class="config-input" type="password" value="ghl-●●●●●●●●" oninput="showToast('⚠ Update .env file directly')"/></div>
-          <div class="config-row"><div><div class="config-label">Twilio SID</div></div><input class="config-input" type="password" value="AC●●●●●●●●" oninput="showToast('⚠ Update .env file directly')"/></div>
-          <div class="config-row"><div><div class="config-label">SendGrid</div></div><input class="config-input" type="password" value="SG.●●●●●●●●" oninput="showToast('⚠ Update .env file directly')"/></div>
-          <div class="config-row"><div><div class="config-label">Bland AI</div></div><input class="config-input" type="password" value="bland-●●●●●●●●" oninput="showToast('⚠ Update .env file directly')"/></div>
-          <div class="config-row"><div><div class="config-label">FB Page Token</div></div><input class="config-input" type="password" value="EAA●●●●●●●●" oninput="showToast('⚠ Update .env file directly')"/></div>
+          <div class="config-row"><div><div class="config-label">🧠 Anthropic API</div></div><input class="config-input" type="password" value="sk-ant-●●●●●●●●" oninput="showToast('⚠️ Update in Railway vars')"/></div>
+          <div class="config-row"><div><div class="config-label">📋 GoHighLevel</div></div><input class="config-input" type="password" value="pit-●●●●●●●●" oninput="showToast('⚠️ Update in Railway vars')"/></div>
+          <div class="config-row"><div><div class="config-label">📞 Bland AI</div></div><input class="config-input" type="password" value="bland-●●●●●●●●" oninput="showToast('⚠️ Update in Railway vars')"/></div>
+          <div class="config-row"><div><div class="config-label">💬 FB Page Token</div></div><input class="config-input" type="password" value="EAA●●●●●●●●" oninput="showToast('⚠️ Update in Railway vars')"/></div>
+          <div class="config-row"><div><div class="config-label">🌐 Webhook URL</div></div><input class="config-input" value="https://top-secret-production.up.railway.app" readonly style="opacity:0.6"/></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ══ PAGE: LOGS ════════════════════════════ -->
+  <!-- ══ PAGE: LOGS ═════════════════════════ -->
   <div class="page" id="page-logs">
     <div class="card">
       <div class="card-header">
-        <div class="card-header-left"><h3>System Logs</h3><p>Real-time log stream</p></div>
+        <div class="card-header-left"><h3>📋 System Logs</h3><p>Real-time log stream from all agents</p></div>
         <div style="display:flex;gap:8px">
-          <button class="tb-btn" onclick="clearLogs()">Clear</button>
-          <button class="tb-btn primary" onclick="showToast('📥 Logs exported')">Export</button>
+          <button class="tb-btn" onclick="clearLogs()">🗑 Clear</button>
+          <button class="tb-btn primary" onclick="showToast('📥 Logs exported!')">📥 Export</button>
         </div>
       </div>
       <div style="max-height:70vh;overflow-y:auto" id="logContainer"></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: PROFILE ══════════════════════ -->
+  <div class="page" id="page-profile">
+    <div class="g2">
+      <!-- Left: Identity -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar">👤</div>
+            <div class="profile-name" id="profile-display-name">peyush</div>
+            <div class="profile-role">Admin · AgentOS</div>
+          </div>
+          <div class="card-body">
+            <div class="config-row">
+              <div><div class="config-label">👤 Your Name</div><div class="config-sub">Shown in dashboard</div></div>
+              <input class="config-input" id="p-username" value="peyush" oninput="document.getElementById('profile-display-name').textContent=this.value"/>
+            </div>
+            <div class="config-row">
+              <div><div class="config-label">📧 Your Email</div></div>
+              <input class="config-input" id="p-email" value="Udayyewale4213@gmail.com"/>
+            </div>
+            <div class="config-row">
+              <div><div class="config-label">📱 Your Phone</div></div>
+              <input class="config-input" id="p-phone" value="+919022303987"/>
+            </div>
+            <button class="save-btn" onclick="saveProfile()">💾 Save Profile</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-header-left"><h3>🔐 Change Password</h3><p>Leave blank to keep current password</p></div></div>
+          <div class="card-body">
+            <div class="config-row"><div><div class="config-label">Current Password</div></div><input class="config-input" type="password" id="p-curr-pass" placeholder="••••••••"/></div>
+            <div class="config-row"><div><div class="config-label">New Password</div></div><input class="config-input" type="password" id="p-new-pass" placeholder="••••••••"/></div>
+            <div class="config-row"><div><div class="config-label">Confirm New</div></div><input class="config-input" type="password" id="p-confirm-pass" placeholder="••••••••"/></div>
+            <button class="save-btn" onclick="changePassword()">🔐 Update Password</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Loan Officer Details -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-header"><div class="card-header-left"><h3>🏢 Loan Officer Details</h3><p>Used in all outbound AI messages</p></div></div>
+          <div class="card-body">
+            <div class="config-row"><div><div class="config-label">👤 LO Full Name</div><div class="config-sub">Appears in every SMS and email</div></div><input class="config-input" id="p-lo-name" value="Uday Yewale"/></div>
+            <div class="config-row"><div><div class="config-label">🏢 Company Name</div></div><input class="config-input" id="p-lo-company" value="YZX - Headd Media"/></div>
+            <div class="config-row"><div><div class="config-label">📞 LO Phone</div><div class="config-sub">Given to leads for callbacks</div></div><input class="config-input" id="p-lo-phone" value="+919022303987"/></div>
+            <div class="config-row"><div><div class="config-label">📧 LO Email</div></div><input class="config-input" id="p-lo-email" value="Udayyewale4213@gmail.com"/></div>
+            <div class="config-row"><div><div class="config-label">🪪 NMLS Number</div><div class="config-sub">Required in all emails by law</div></div><input class="config-input" id="p-lo-nmls" value="12345678"/></div>
+            <div class="config-row"><div><div class="config-label">🌍 Timezone</div></div>
+              <select class="config-select" id="p-lo-tz">
+                <option selected>America/Chicago</option>
+                <option>America/New_York</option>
+                <option>America/Los_Angeles</option>
+                <option>America/Denver</option>
+                <option>America/Phoenix</option>
+              </select>
+            </div>
+            <button class="save-btn" onclick="saveLODetails()">💾 Save LO Details</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-header-left"><h3>🌐 System Info</h3></div></div>
+          <div class="card-body">
+            <div class="config-row"><div><div class="config-label">🔗 Webhook URL</div><div class="config-sub">Paste this into GHL</div></div><input class="config-input" value="https://top-secret-production.up.railway.app/webhook/ghl" readonly style="opacity:0.6;font-size:0.68rem"/></div>
+            <div class="config-row"><div><div class="config-label">🤖 AI Model</div></div><input class="config-input" value="claude-sonnet-4-6" readonly style="opacity:0.6"/></div>
+            <div class="config-row"><div><div class="config-label">🗄 Database</div></div><input class="config-input" value="SQLite · agentos.db" readonly style="opacity:0.6"/></div>
+            <div class="config-row"><div><div class="config-label">🚀 Hosting</div></div><input class="config-input" value="Railway · top-secret-production" readonly style="opacity:0.6"/></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -769,10 +765,9 @@ tbody td { padding: 10px 14px; vertical-align: middle; }
   </div>
   <div class="sp-body" id="sp-body"></div>
   <div class="sp-actions">
-    <button class="sp-btn" onclick="showToast('📱 SMS sent!')">Send SMS</button>
-    <button class="sp-btn" onclick="showToast('📧 Email sent!')">Send Email</button>
-    <button class="sp-btn" onclick="showToast('📞 Calling via Bland AI…')">Call Now</button>
-    <button class="sp-btn primary" onclick="markQualified()">Mark Qualified</button>
+    <button class="sp-btn" onclick="showToast('📱 SMS sent!')">📱 Send SMS</button>
+    <button class="sp-btn" onclick="showToast('📧 Email sent!')">📧 Send Email</button>
+    <button class="sp-btn primary" onclick="markQualified()">🎯 Mark Qualified</button>
   </div>
 </div>
 
@@ -791,20 +786,20 @@ tbody td { padding: 10px 14px; vertical-align: middle; }
 <div class="modal-overlay" id="newLeadModal" onclick="if(event.target===this)closeModal('newLeadModal')">
   <div class="modal">
     <div class="modal-header">
-      <h3>Add New Lead</h3>
+      <h3>➕ Add New Lead</h3>
       <button class="modal-close" onclick="closeModal('newLeadModal')">✕</button>
     </div>
     <div class="modal-body">
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px">Full Name *</div><input class="config-input" style="width:100%" id="nl-name" placeholder="John Smith"/></div>
-        <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px">Phone *</div><input class="config-input" style="width:100%" id="nl-phone" placeholder="+1 (555) 000-0000"/></div>
-        <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px">Email</div><input class="config-input" style="width:100%" id="nl-email" placeholder="john@email.com" type="email"/></div>
-        <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px">Loan Type</div>
-          <select class="config-select" id="nl-type" style="width:100%"><option value="purchase">Purchase</option><option value="refinance">Refinance</option></select>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div><div style="font-size:0.72rem;font-weight:600;color:var(--dark);margin-bottom:6px">👤 Full Name *</div><input class="config-input" style="width:100%" id="nl-name" placeholder="John Smith"/></div>
+        <div><div style="font-size:0.72rem;font-weight:600;color:var(--dark);margin-bottom:6px">📱 Phone *</div><input class="config-input" style="width:100%" id="nl-phone" placeholder="+1 (555) 000-0000"/></div>
+        <div><div style="font-size:0.72rem;font-weight:600;color:var(--dark);margin-bottom:6px">📧 Email</div><input class="config-input" style="width:100%" id="nl-email" placeholder="john@email.com" type="email"/></div>
+        <div><div style="font-size:0.72rem;font-weight:600;color:var(--dark);margin-bottom:6px">🏷 Loan Type</div>
+          <select class="config-select" id="nl-type" style="width:100%"><option value="purchase">🏠 Purchase</option><option value="refinance">🔄 Refinance</option></select>
         </div>
-        <div style="display:flex;gap:8px;margin-top:8px">
+        <div style="display:flex;gap:8px;margin-top:4px">
           <button class="sp-btn" style="flex:1" onclick="closeModal('newLeadModal')">Cancel</button>
-          <button class="sp-btn primary" style="flex:2" onclick="addNewLead()">🚀 Add & Fire Agents</button>
+          <button class="tb-btn primary" style="flex:2" onclick="addNewLead()">🚀 Add & Fire Agents</button>
         </div>
       </div>
     </div>
@@ -827,63 +822,57 @@ const LEADS_DATA = [
 ];
 
 const CONVERSATIONS = {
-  "L002": [
-    {dir:"out",ch:"sms",   msg:"Hi Sarah! This is Michael Davis from Bright Path Lending. Saw you were looking into refinancing — have a quick minute to chat?",time:"10:02 AM"},
-    {dir:"in", ch:"sms",   msg:"Hi! Yes I'm interested. What rates are you offering right now?",time:"10:15 AM"},
-    {dir:"out",ch:"sms",   msg:"Great question! Current 30yr fixed is around 6.8% but we can often do better depending on your credit profile. Worth a quick 15-min call to see what you qualify for?",time:"10:16 AM"},
-    {dir:"in", ch:"sms",   msg:"Sure, I'm free Thursday afternoon",time:"10:45 AM"},
-    {dir:"out",ch:"email", msg:"[Day 5 Email] Hi Sarah, wanted to share a quick case study — a client similar to you saved $412/month after refinancing with us last quarter...",time:"Yesterday"},
+  "L002":[
+    {dir:"out",ch:"sms",msg:"Hi Sarah! This is Uday Yewale from YZX - Headd Media. Saw you were looking into refinancing — have a quick minute to chat?",time:"10:02 AM"},
+    {dir:"in", ch:"sms",msg:"Hi! Yes I'm interested. What rates are you offering right now?",time:"10:15 AM"},
+    {dir:"out",ch:"sms",msg:"Great question! Current 30yr fixed is around 6.8% but we can often do better depending on your credit profile. Worth a quick 15-min call?",time:"10:16 AM"},
+    {dir:"in", ch:"sms",msg:"Sure, I'm free Thursday afternoon",time:"10:45 AM"},
+    {dir:"out",ch:"email",msg:"[Day 5 Email] Hi Sarah, wanted to share a quick case study — a client similar to you saved $412/month after refinancing last quarter...",time:"Yesterday"},
   ],
-  "L003": [
-    {dir:"out",ch:"sms",   msg:"Hi Marcus! Michael Davis from Bright Path Lending here. Congrats on looking at your first home purchase! Are you pre-qualified yet?",time:"8:01 AM"},
-    {dir:"in", ch:"sms",   msg:"No not yet. How long does that take?",time:"8:30 AM"},
-    {dir:"out",ch:"sms",   msg:"Usually 15 minutes over the phone! I can pull your credit and give you a real number. Free call — when works for you?",time:"8:31 AM"},
-    {dir:"in", ch:"sms",   msg:"I can do today at 2pm",time:"9:00 AM"},
-    {dir:"out",ch:"sms",   msg:"Perfect! I'll call you at 2pm sharp. Talk soon 👍",time:"9:01 AM"},
-    {dir:"in", ch:"phone", msg:"[Call completed — 18 mins — Lead pre-qualified $485K purchase]",time:"2:19 PM"},
+  "L003":[
+    {dir:"out",ch:"sms",msg:"Hi Marcus! Uday Yewale here. Congrats on looking at your first home purchase! Are you pre-qualified yet?",time:"8:01 AM"},
+    {dir:"in", ch:"sms",msg:"No not yet. How long does that take?",time:"8:30 AM"},
+    {dir:"out",ch:"sms",msg:"Usually 15 minutes over the phone! I can pull your credit and give you a real number. Free call — when works for you?",time:"8:31 AM"},
+    {dir:"in", ch:"sms",msg:"I can do today at 2pm",time:"9:00 AM"},
+    {dir:"out",ch:"sms",msg:"Perfect! I'll call you at 2pm sharp. Talk soon 👍",time:"9:01 AM"},
+    {dir:"in", ch:"phone",msg:"[Call completed — 18 mins — Lead pre-qualified $485K purchase]",time:"2:19 PM"},
   ],
-  "L004": [
-    {dir:"out",ch:"sms",   msg:"Hi Diane, Michael Davis here from Bright Path Lending. I saw you're interested in refinancing — what's driving the interest? Lower payment or cash-out?",time:"2 days ago"},
-    {dir:"in", ch:"sms",   msg:"Lower payment. My current rate is 7.9%",time:"2 days ago"},
-    {dir:"out",ch:"email", msg:"[Day 3 Email] Hi Diane, great news — with a rate of 7.9% you could potentially save significantly...",time:"Yesterday"},
+  "L004":[
+    {dir:"out",ch:"sms",msg:"Hi Diane, Uday Yewale here. I saw you're interested in refinancing — what's driving the interest? Lower payment or cash-out?",time:"2 days ago"},
+    {dir:"in", ch:"sms",msg:"Lower payment. My current rate is 7.9%",time:"2 days ago"},
+    {dir:"out",ch:"email",msg:"[Day 3 Email] Hi Diane, great news — with a rate of 7.9% you could potentially save significantly...",time:"Yesterday"},
   ],
 };
 
 const FEED_ITEMS = [
-  {color:"#34d399",agent:"OPENER",  agentTag:"tag-green",  msg:"SMS sent to James Wilson — 'Hi James! Michael Davis from Bright Path…'",time:"just now"},
-  {color:"#34d399",agent:"OPENER",  agentTag:"tag-green",  msg:"Email sent to James Wilson — Subject: 'Your purchase loan enquiry'",time:"just now"},
-  {color:"#fbbf24",agent:"OPENER",  agentTag:"tag-yellow", msg:"Bland AI voice call initiated → +1(626)204-3891",time:"1 min ago"},
-  {color:"#9b8afb",agent:"MANAGER", agentTag:"tag-purple", msg:"New lead — Tony Patel (Purchase). Classifying with claude-sonnet-4-6…",time:"2 min ago"},
-  {color:"#9b8afb",agent:"MANAGER", agentTag:"tag-purple", msg:"Classified → Purchase | High Urgency | Tone: Excited. Opener queued in 90s.",time:"2 min ago"},
-  {color:"#60a5fa",agent:"NURTURER",agentTag:"tag-blue",   msg:"Day 5 email queued for Sarah Chen — 'Case study: client saved $412/mo'",time:"5 min ago"},
-  {color:"#9b8afb",agent:"MANAGER", agentTag:"tag-purple", msg:"Marcus Webb replied via SMS — generating response with Claude…",time:"15 min ago"},
-  {color:"#34d399",agent:"MANAGER", agentTag:"tag-green",  msg:"🎯 Marcus Webb QUALIFIED — flagging for LO handoff to Michael Davis",time:"18 min ago"},
-  {color:"#60a5fa",agent:"NURTURER",agentTag:"tag-blue",   msg:"Day 9 SMS sent to Diane Ruiz — 'Hi Diane, still here to help…'",time:"1 hr ago"},
-  {color:"#9b8afb",agent:"SYSTEM",  agentTag:"tag-muted",  msg:"GHL webhook received — contact.created (James Wilson)",time:"2 min ago"},
-  {color:"#64748b",agent:"SYSTEM",  agentTag:"tag-muted",  msg:"Bland AI callback — Sarah Chen call: 1m 42s, answered",time:"6 hr ago"},
-  {color:"#64748b",agent:"SYSTEM",  agentTag:"tag-muted",  msg:"Flask webhook server started on port 5000",time:"8 hr ago"},
+  {color:"#10b981",agent:"OPENER",  agentTag:"tag-green",  msg:"📱 SMS sent to James Wilson — 'Hi James! Uday Yewale from YZX…'",time:"just now"},
+  {color:"#10b981",agent:"OPENER",  agentTag:"tag-green",  msg:"📧 Email sent to James Wilson — Subject: 'Your purchase loan enquiry'",time:"just now"},
+  {color:"#111827",agent:"MANAGER", agentTag:"tag-black",  msg:"🧠 New lead — Tony Patel (Purchase). Classifying with claude-sonnet-4-6…",time:"2 min ago"},
+  {color:"#111827",agent:"MANAGER", agentTag:"tag-black",  msg:"✅ Classified → Purchase | High Urgency | Tone: Excited. Opener queued in 90s.",time:"2 min ago"},
+  {color:"#3b82f6",agent:"NURTURER",agentTag:"tag-blue",   msg:"📅 Day 5 email queued for Sarah Chen — 'Case study: client saved $412/mo'",time:"5 min ago"},
+  {color:"#111827",agent:"MANAGER", agentTag:"tag-black",  msg:"💬 Marcus Webb replied via SMS — generating response with Claude…",time:"15 min ago"},
+  {color:"#10b981",agent:"MANAGER", agentTag:"tag-green",  msg:"🎯 Marcus Webb QUALIFIED — flagging for LO handoff to Uday Yewale",time:"18 min ago"},
+  {color:"#3b82f6",agent:"NURTURER",agentTag:"tag-blue",   msg:"📱 Day 9 SMS sent to Diane Ruiz — 'Hi Diane, still here to help…'",time:"1 hr ago"},
+  {color:"#6b7280",agent:"SYSTEM",  agentTag:"tag-gray",   msg:"🔔 GHL webhook received — contact.created (James Wilson)",time:"2 min ago"},
+  {color:"#6b7280",agent:"SYSTEM",  agentTag:"tag-gray",   msg:"⚙️ Flask webhook server started on port 8080",time:"8 hr ago"},
 ];
 
 const LOG_LINES = [
-  {time:"10:02:14",level:"INFO",msg:"[SERVER] GHL webhook received → contact.created: James Wilson (L001)"},
-  {time:"10:02:14",level:"INFO",msg:"[MANAGER] New lead received → James Wilson (L001)"},
-  {time:"10:02:15",level:"INFO",msg:"[MANAGER] Classifying lead with claude-sonnet-4-6…"},
+  {time:"10:02:14",level:"INFO",   msg:"[SERVER] GHL webhook received → contact.created: James Wilson (L001)"},
+  {time:"10:02:14",level:"INFO",   msg:"[MANAGER] New lead received → James Wilson (L001)"},
+  {time:"10:02:15",level:"INFO",   msg:"[MANAGER] Classifying lead with claude-sonnet-4-6…"},
   {time:"10:02:17",level:"SUCCESS",msg:"[MANAGER] Lead classified → purchase | high urgency | tone: excited"},
-  {time:"10:02:17",level:"INFO",msg:"[MANAGER] Opener scheduled in 90s for lead L001"},
-  {time:"10:03:47",level:"INFO",msg:"[OPENER] Running for James Wilson (L001)"},
-  {time:"10:03:48",level:"INFO",msg:"[OPENER] Generating messages with Claude for purchase lead…"},
-  {time:"10:03:49",level:"SUCCESS",msg:"[OPENER] SMS sent — SID: SM9a3f1c4b2e8d7a6f → +1(626)204-3891"},
-  {time:"10:03:50",level:"SUCCESS",msg:"[OPENER] Email sent — status: 202 → james@email.com"},
-  {time:"10:03:51",level:"INFO",msg:"[OPENER] Initiating Bland AI voice call → +1(626)204-3891"},
-  {time:"10:03:52",level:"SUCCESS",msg:"[OPENER] Voice call initiated — call_id: bland_7f2c3e4a"},
-  {time:"10:03:53",level:"SUCCESS",msg:"[OPENER] Messenger sent — psid: 1234567890"},
-  {time:"10:03:54",level:"INFO",msg:"[MANAGER] NurturerAgent scheduled for lead L001"},
-  {time:"10:05:00",level:"INFO",msg:"[NURTURER] 14-day sequence started for Sarah Chen (L002) — Day 5"},
-  {time:"10:15:22",level:"INFO",msg:"[SERVER] Inbound SMS from +1(415)778-2200 (L002) — 'Hi! Yes I'm interested…'"},
-  {time:"10:15:22",level:"INFO",msg:"[MANAGER] Reply from L002 via sms — generating AI response…"},
-  {time:"10:15:24",level:"SUCCESS",msg:"[MANAGER] SMS reply sent to Sarah Chen"},
-  {time:"10:18:01",level:"SUCCESS",msg:"[MANAGER] 🎯 LEAD QUALIFIED — handing off Marcus Webb to Michael Davis"},
-  {time:"10:18:01",level:"INFO",msg:"[MANAGER] LO alert sent — Marcus Webb ready for call"},
+  {time:"10:02:17",level:"INFO",   msg:"[MANAGER] Opener scheduled in 90s for lead L001"},
+  {time:"10:03:47",level:"INFO",   msg:"[OPENER] Running for James Wilson (L001)"},
+  {time:"10:03:48",level:"INFO",   msg:"[OPENER] Generating messages with Claude for purchase lead…"},
+  {time:"10:03:49",level:"SUCCESS",msg:"[OPENER] SMS sent via GHL → +1(626)204-3891"},
+  {time:"10:03:50",level:"SUCCESS",msg:"[OPENER] Email sent via GHL → james@email.com"},
+  {time:"10:03:54",level:"INFO",   msg:"[MANAGER] NurturerAgent scheduled for lead L001"},
+  {time:"10:05:00",level:"INFO",   msg:"[NURTURER] 14-day sequence started for Sarah Chen (L002) — Day 5"},
+  {time:"10:15:22",level:"INFO",   msg:"[SERVER] Inbound SMS from L002 — 'Hi! Yes I'm interested…'"},
+  {time:"10:15:22",level:"INFO",   msg:"[MANAGER] Reply from L002 via sms — generating AI response…"},
+  {time:"10:15:24",level:"SUCCESS",msg:"[MANAGER] SMS reply sent to Sarah Chen via GHL"},
+  {time:"10:18:01",level:"SUCCESS",msg:"[MANAGER] 🎯 LEAD QUALIFIED — handing off Marcus Webb to Uday Yewale"},
 ];
 
 const SEQ_DATA = [
@@ -895,36 +884,37 @@ const SEQ_DATA = [
 const ALL_DAYS = [1,2,3,5,7,9,11,14];
 
 const CHANNELS_DATA = [
-  {id:"sms",      name:"SMS",       icon:"📱", sent:18,rate:74,color:"#34d399", on:true,  provider:"Twilio"},
-  {id:"email",    name:"Email",     icon:"📧", sent:15,rate:41,color:"#60a5fa", on:true,  provider:"SendGrid"},
-  {id:"voice",    name:"Voice",     icon:"📞", sent:14,rate:58,color:"#fbbf24", on:true,  provider:"Bland AI"},
-  {id:"messenger",name:"Messenger", icon:"💬", sent:11,rate:62,color:"#9b8afb", on:true,  provider:"FB Graph API"},
+  {id:"sms",      name:"SMS",       icon:"📱", sent:18,rate:74,color:"#10b981", on:true,  provider:"GHL A2P"},
+  {id:"email",    name:"Email",     icon:"📧", sent:15,rate:41,color:"#3b82f6", on:true,  provider:"GHL Email"},
+  {id:"voice",    name:"Voice",     icon:"📞", sent:0, rate:0, color:"#f59e0b", on:false, provider:"Bland AI (off)"},
+  {id:"messenger",name:"Messenger", icon:"💬", sent:0, rate:0, color:"#6b7280", on:false, provider:"FB Graph API (off)"},
 ];
 
-let currentFilter = "all";
 let currentLeadId = null;
 let simCount = 0;
 
-// ═══════════════════════════════ NAV
+// ═══════════════════════════════ PAGE META
 const PAGE_META = {
-  dashboard:     {title:"Dashboard",     sub:"Real-time overview of all agents and leads"},
-  leads:         {title:"All Leads",     sub:"Full lead pipeline with filtering and search"},
-  agents:        {title:"Agents",        sub:"Detailed view of all running agents"},
-  conversations: {title:"Conversations", sub:"Message threads with leads"},
-  channels:      {title:"Channels",      sub:"Performance and settings per channel"},
-  analytics:     {title:"Analytics",     sub:"Charts and conversion metrics"},
-  config:        {title:"Config",        sub:"API keys, LO details, timing settings"},
-  logs:          {title:"System Logs",   sub:"Real-time log stream from all agents"},
+  dashboard:     {title:"🏠 Dashboard",        sub:"Real-time overview of all agents and leads"},
+  leads:         {title:"👥 All Leads",         sub:"Full lead pipeline with filtering and search"},
+  agents:        {title:"🤖 Agents",            sub:"Detailed view of all running agents"},
+  conversations: {title:"💬 Conversations",     sub:"Message threads with leads"},
+  channels:      {title:"📡 Channels",          sub:"Performance and settings per channel"},
+  analytics:     {title:"📊 Analytics",         sub:"Charts and conversion metrics"},
+  config:        {title:"⚙️ Config",             sub:"API keys, LO details, timing settings"},
+  logs:          {title:"📋 System Logs",        sub:"Real-time log stream from all agents"},
+  profile:       {title:"👤 My Profile",         sub:"Edit your account and loan officer details"},
 };
 
 function navTo(page, el) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-  document.getElementById("page-"+page).classList.add("active");
+  const pageEl = document.getElementById("page-"+page);
+  if(pageEl) pageEl.classList.add("active");
   if(el) el.classList.add("active");
   const meta = PAGE_META[page] || {};
   document.getElementById("page-title").textContent = meta.title || page;
-  document.getElementById("page-sub").textContent = meta.sub || "";
+  document.getElementById("page-sub").textContent   = meta.sub || "";
   closePanel();
   if(page==="leads")         renderLeadTable();
   if(page==="channels")      renderChannelPage();
@@ -939,19 +929,13 @@ setInterval(()=>{ document.getElementById("clock").textContent=new Date().toLoca
 // ═══════════════════════════════ TOAST
 function showToast(msg) {
   const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
+  t.textContent = msg; t.classList.add("show");
   clearTimeout(t._timer);
   t._timer = setTimeout(()=>t.classList.remove("show"),2800);
 }
 
 // ═══════════════════════════════ MODAL
-function openModal(id) {
-  if(id==="newLead") document.getElementById("newLeadModal").classList.add("open");
-}
-function closeModal(id) {
-  document.getElementById(id).classList.remove("open");
-}
+function closeModal(id) { document.getElementById(id).classList.remove("open"); }
 
 // ═══════════════════════════════ SIDE PANEL
 function openPanel(leadId) {
@@ -959,78 +943,72 @@ function openPanel(leadId) {
   if(!lead) return;
   currentLeadId = leadId;
   document.getElementById("sp-lead-name").textContent = lead.name;
-  const tagCls = {opener:"tag-purple",nurture:"tag-blue",qualified:"tag-green",new:"tag-yellow",lost:"tag-red"}[lead.status]||"tag-muted";
-  const tagLabel = {opener:"Opener Active",nurture:"Nurturing",qualified:"Qualified",new:"New",lost:"Lost"}[lead.status]||lead.status;
-  document.getElementById("sp-lead-tag").className = "tag "+tagCls;
-  document.getElementById("sp-lead-tag").textContent = tagLabel;
+  const tagMap = {opener:"tag-orange",nurture:"tag-blue",qualified:"tag-green",new:"tag-yellow",lost:"tag-red"};
+  const lblMap = {opener:"⚡ Opener Active",nurture:"🌱 Nurturing",qualified:"🎯 Qualified",new:"🆕 New",lost:"❌ Lost"};
+  document.getElementById("sp-lead-tag").className = "tag "+(tagMap[lead.status]||"tag-gray");
+  document.getElementById("sp-lead-tag").textContent = lblMap[lead.status]||lead.status;
 
-  const convo = CONVERSATIONS[leadId] || [];
-  const chHTML = `
-    <div>${["sms","email","voice","msg"].map(c=>`
-      <span class="ch-dot" style="background:${lead.channels[c]?"rgba(52,211,153,0.15)":"rgba(255,255,255,0.04)"};display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;font-size:12px;margin-right:3px">${{"sms":"📱","email":"📧","voice":"📞","msg":"💬"}[c]}</span>
-    `).join("")}</div>`;
+  const convo = CONVERSATIONS[leadId]||[];
+  const chMap = {sms:"📱",email:"📧",voice:"📞",msg:"💬"};
+  const chFired = (c,key)=>`<div class="ch-dot" style="background:${lead.channels[key]?"rgba(16,185,129,0.1)":"var(--bg)"};border-color:${lead.channels[key]?"rgba(16,185,129,0.3)":"var(--border)"}" title="${c}">${c}</div>`;
 
   document.getElementById("sp-body").innerHTML = `
     <div>
-      <div class="sp-section-label">Contact Info</div>
+      <div class="sp-section-label">📋 Contact Info</div>
       <div class="info-grid">
         <div class="info-item"><div class="il">Phone</div><div class="iv">${lead.phone}</div></div>
-        <div class="info-item"><div class="il">Email</div><div class="iv" style="font-size:0.68rem">${lead.email}</div></div>
-        <div class="info-item"><div class="il">Loan Type</div><div class="iv" style="text-transform:capitalize">${lead.type}</div></div>
+        <div class="info-item"><div class="il">Email</div><div class="iv" style="font-size:0.65rem">${lead.email}</div></div>
+        <div class="info-item"><div class="il">Loan Type</div><div class="iv" style="text-transform:capitalize">${lead.type==="purchase"?"🏠 "+lead.type:"🔄 "+lead.type}</div></div>
         <div class="info-item"><div class="il">Source</div><div class="iv">${lead.source}</div></div>
         <div class="info-item"><div class="il">Lead ID</div><div class="iv">${lead.id}</div></div>
         <div class="info-item"><div class="il">Created</div><div class="iv">${lead.created}</div></div>
       </div>
     </div>
     <div>
-      <div class="sp-section-label">Channels Fired</div>
-      ${chHTML}
+      <div class="sp-section-label">📡 Channels Fired</div>
+      <div class="ch-pip">
+        ${chFired("📱","sms")}${chFired("📧","email")}${chFired("📞","voice")}${chFired("💬","msg")}
+      </div>
     </div>
     <div>
-      <div class="sp-section-label">Nurture Sequence</div>
-      ${lead.day>0 ? renderSeqDots(lead.day) : '<span style="font-size:0.72rem;color:var(--muted)">Not yet started</span>'}
+      <div class="sp-section-label">🗓 Nurture Sequence</div>
+      ${lead.day>0 ? renderSeqDots(lead.day) : '<span style="font-size:0.72rem;color:var(--muted)">⏳ Not yet started</span>'}
     </div>
-    ${convo.length ? `
+    ${convo.length?`
     <div>
-      <div class="sp-section-label">Conversation (${convo.length} messages, ${lead.replies} replies)</div>
+      <div class="sp-section-label">💬 Conversation (${convo.length} messages, ${lead.replies} replies)</div>
       <div class="convo-wrap">
         ${convo.map(m=>`
           <div style="display:flex;flex-direction:column;align-items:${m.dir==="out"?"flex-end":"flex-start"}">
             <div class="msg-bubble msg-${m.dir}">
-              <div style="font-size:0.6rem;color:var(--muted);margin-bottom:3px">${m.ch.toUpperCase()}</div>
-              ${m.msg}
+              <div style="font-size:0.58rem;opacity:0.6;margin-bottom:2px">${m.ch.toUpperCase()}</div>${m.msg}
             </div>
             <div class="msg-meta">${m.time}</div>
-          </div>
-        `).join("")}
+          </div>`).join("")}
       </div>
-    </div>` : `<div style="font-size:0.72rem;color:var(--muted)">No replies yet</div>`}
+    </div>` : `<div style="font-size:0.72rem;color:var(--muted)">💬 No replies yet</div>`}
   `;
   document.getElementById("sidePanel").classList.add("open");
 }
 
-function closePanel() {
-  document.getElementById("sidePanel").classList.remove("open");
-  currentLeadId = null;
-}
+function closePanel() { document.getElementById("sidePanel").classList.remove("open"); currentLeadId=null; }
 
 function renderSeqDots(currentDay) {
   return `<div class="seq-wrap">${ALL_DAYS.map((d,i)=>{
-    const done = d<currentDay, cur=d===currentDay;
-    const cls = done?"done":cur?"current":"";
-    const line = i<ALL_DAYS.length-1?`<div class="seq-line ${done?"done":""}"></div>`:"";
-    return `<div class="seq-dot ${cls}">${d}</div>${line}`;
+    const done=d<currentDay, cur=d===currentDay;
+    const cls=done?"done":cur?"current":"";
+    const line=i<ALL_DAYS.length-1?`<div class="seq-line ${done?"done":""}"></div>`:"";
+    return `<div class="seq-dot ${cls}" title="Day ${d}">${d}</div>${line}`;
   }).join("")}</div>`;
 }
 
 function markQualified() {
   if(!currentLeadId) return;
-  const lead = LEADS_DATA.find(l=>l.id===currentLeadId);
-  if(lead) { lead.status="qualified"; lead.agent="Manager"; }
+  const lead=LEADS_DATA.find(l=>l.id===currentLeadId);
+  if(lead){lead.status="qualified";lead.agent="Manager";}
   showToast("🎯 Lead marked qualified — LO alerted!");
-  addFeedItem("#34d399","MANAGER","tag-green",`🎯 ${lead?.name} manually marked QUALIFIED by operator`);
-  renderLeadTable();
-  closePanel();
+  addFeedItem("#10b981","MANAGER","tag-green",`🎯 ${lead?.name} manually marked QUALIFIED by operator`);
+  renderLeadTable(); closePanel();
 }
 
 // ═══════════════════════════════ AGENT MODAL
@@ -1038,183 +1016,164 @@ function openAgentModal(type) {
   const data = {
     manager:{
       title:"🧠 Manager Agent — Details",
-      body:`
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div style="background:var(--bg2);border-radius:9px;padding:14px">
-            <div class="sp-section-label" style="margin-bottom:8px">What it does</div>
-            <div style="font-size:0.78rem;color:var(--light);line-height:1.7">
-              The Manager Agent is the brain of the system. Every time a new lead arrives via the GHL webhook, it:<br><br>
-              1. <strong style="color:var(--text)">Classifies the lead</strong> — sends lead data to Claude to determine loan type (purchase vs refi), urgency, and recommended tone<br>
-              2. <strong style="color:var(--text)">Queues the Opener</strong> — starts a 90-second timer then fires Agent 1<br>
-              3. <strong style="color:var(--text)">Schedules the Nurturer</strong> — books all 8 follow-up touchpoints across 14 days<br>
-              4. <strong style="color:var(--text)">Monitors replies</strong> — routes inbound messages back through Claude for smart responses<br>
-              5. <strong style="color:var(--text)">Detects qualification</strong> — watches for signals (credit, income, down payment) and flags the LO
-            </div>
+      body:`<div style="display:flex;flex-direction:column;gap:14px">
+        <div style="background:var(--bg);border-radius:10px;padding:16px;border:1px solid var(--border)">
+          <div class="sp-section-label" style="margin-bottom:8px">What it does</div>
+          <div style="font-size:0.78rem;color:var(--dark);line-height:1.8">
+            The Manager Agent is the brain of the system. Every time a new lead arrives via GHL webhook, it:<br><br>
+            1. 🧠 <strong>Classifies the lead</strong> using Claude AI — determines loan type, urgency, tone<br>
+            2. ⏱ <strong>Queues the Opener</strong> — 90-second timer then fires Agent 1<br>
+            3. 📅 <strong>Schedules the Nurturer</strong> — books all 8 touchpoints across 14 days<br>
+            4. 💬 <strong>Monitors replies</strong> — routes inbound messages through Claude for smart responses<br>
+            5. 🎯 <strong>Detects qualification</strong> — watches for signals and flags the LO
           </div>
-          <div class="g2">
-            <div class="at-stat"><div class="v" style="color:var(--purple)">7</div><div class="l">Leads Routed Today</div></div>
-            <div class="at-stat"><div class="v" style="color:var(--green)">1</div><div class="l">LO Handoffs</div></div>
-            <div class="at-stat"><div class="v" style="color:var(--blue)">1.2s</div><div class="l">Avg Classification Time</div></div>
-            <div class="at-stat"><div class="v" style="color:var(--yellow)">94%</div><div class="l">Classification Accuracy</div></div>
-          </div>
-          <div style="background:var(--bg2);border-radius:9px;padding:14px;border-left:2px solid var(--purple)">
-            <div class="sp-section-label" style="margin-bottom:4px">Current Task</div>
-            <div style="font-size:0.75rem;color:var(--light)">Monitoring webhook server. Opener timer running for Tony Patel (88s elapsed)…</div>
-          </div>
-          <button class="sp-btn primary" onclick="closeModal('agentModal');showToast('📋 Manager Agent log opened')">View Full Logs</button>
-        </div>`
+        </div>
+        <div class="g2">
+          <div class="at-stat"><div class="v">7</div><div class="l">Leads Routed Today</div></div>
+          <div class="at-stat"><div class="v">1</div><div class="l">LO Handoffs</div></div>
+          <div class="at-stat"><div class="v">1.2s</div><div class="l">Avg Classification</div></div>
+          <div class="at-stat"><div class="v">94%</div><div class="l">Accuracy</div></div>
+        </div>
+        <div style="background:var(--bg);border-radius:9px;padding:13px;border-left:3px solid var(--black)">
+          <div class="sp-section-label" style="margin-bottom:4px">⏳ Current Task</div>
+          <div style="font-size:0.75rem;color:var(--dark)">Monitoring webhook server. Opener timer running for Tony Patel (88s elapsed)…</div>
+        </div>
+        <button class="tb-btn primary" onclick="closeModal('agentModal');showToast('📋 Manager logs opened')">📋 View Full Logs</button>
+      </div>`
     },
     opener:{
-      title:"⚡ Agent 1 (Opener) — Details",
-      body:`
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div style="background:var(--bg2);border-radius:9px;padding:14px">
-            <div class="sp-section-label" style="margin-bottom:8px">What it does</div>
-            <div style="font-size:0.78rem;color:var(--light);line-height:1.7">
-              Agent 1 is the speed agent. The moment the 90-second timer fires, it blasts all 4 channels simultaneously:<br><br>
-              📱 <strong style="color:var(--text)">SMS via Twilio</strong> — personalised 160-char opening message<br>
-              📧 <strong style="color:var(--text)">Email via SendGrid</strong> — warm 3-paragraph email with NMLS number<br>
-              💬 <strong style="color:var(--text)">Messenger via FB Graph API</strong> — casual opener matching the SMS tone<br>
-              📞 <strong style="color:var(--text)">AI Voice via Bland AI</strong> — 90-second call, leaves voicemail if no answer<br><br>
-              All messages are generated fresh by <strong style="color:var(--text)">claude-sonnet-4-6</strong> based on lead type and classification.
-            </div>
+      title:"⚡ Opener Agent — Details",
+      body:`<div style="display:flex;flex-direction:column;gap:14px">
+        <div style="background:var(--bg);border-radius:10px;padding:16px;border:1px solid var(--border)">
+          <div class="sp-section-label" style="margin-bottom:8px">What it does</div>
+          <div style="font-size:0.78rem;color:var(--dark);line-height:1.8">
+            Agent 1 is the speed agent. The moment the 90-second timer fires, it hits all enabled channels:<br><br>
+            📱 <strong>SMS via GHL A2P</strong> — personalised 160-char opening message<br>
+            📧 <strong>Email via GHL</strong> — warm 3-paragraph email with NMLS number<br>
+            💬 <strong>Messenger via FB Graph API</strong> — (disabled)<br>
+            📞 <strong>AI Voice via Bland AI</strong> — (disabled)<br><br>
+            All messages are generated fresh by <strong>claude-sonnet-4-6</strong> based on lead type.
           </div>
-          <div class="g2">
-            <div class="at-stat"><div class="v" style="color:var(--green)">6</div><div class="l">Openers Fired</div></div>
-            <div class="at-stat"><div class="v" style="color:var(--yellow)">11</div><div class="l">Replies Received</div></div>
-            <div class="at-stat"><div class="v" style="color:var(--blue)">18</div><div class="l">SMS Sent</div></div>
-            <div class="at-stat"><div class="v" style="color:var(--purple)">14</div><div class="l">Voice Calls</div></div>
-          </div>
-          <div style="background:var(--bg2);border-radius:9px;padding:14px;border-left:2px solid var(--green)">
-            <div class="sp-section-label" style="margin-bottom:4px">Current Task</div>
-            <div style="font-size:0.75rem;color:var(--light)">All 4 channels firing for James Wilson. SMS ✓ Email ✓ Voice in progress… Messenger queued.</div>
-          </div>
-          <button class="sp-btn primary" onclick="closeModal('agentModal');showToast('📋 Opener log opened')">View Full Logs</button>
-        </div>`
+        </div>
+        <div class="g2">
+          <div class="at-stat"><div class="v">6</div><div class="l">Openers Fired</div></div>
+          <div class="at-stat"><div class="v">11</div><div class="l">Replies Received</div></div>
+          <div class="at-stat"><div class="v">18</div><div class="l">SMS Sent</div></div>
+          <div class="at-stat"><div class="v">15</div><div class="l">Emails Sent</div></div>
+        </div>
+        <div style="background:var(--bg);border-radius:9px;padding:13px;border-left:3px solid var(--green)">
+          <div class="sp-section-label" style="margin-bottom:4px">✅ Current Task</div>
+          <div style="font-size:0.75rem;color:var(--dark)">All channels fired for James Wilson. SMS ✓ Email ✓</div>
+        </div>
+        <button class="tb-btn primary" onclick="closeModal('agentModal');showToast('📋 Opener logs opened')">📋 View Full Logs</button>
+      </div>`
     },
     nurturer:{
-      title:"🌱 Agent 2 (Nurturer) — Details",
-      body:`
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div style="background:var(--bg2);border-radius:9px;padding:14px">
-            <div class="sp-section-label" style="margin-bottom:8px">What it does</div>
-            <div style="font-size:0.78rem;color:var(--light);line-height:1.7">
-              Agent 2 runs a structured 14-day follow-up sequence. It fires 8 touchpoints at strategic intervals:<br><br>
-              Day 1 — Warm SMS check-in<br>
-              Day 2 — Educational email (rates overview)<br>
-              Day 3 — Value-add SMS (rate tip)<br>
-              Day 5 — Case study email<br>
-              Day 7 — Soft CTA SMS (free rate check)<br>
-              Day 9 — FAQ email<br>
-              Day 11 — Social proof SMS<br>
-              Day 14 — Final breakup email<br><br>
-              Each message is written fresh by Claude per lead. Sequence <strong style="color:var(--text)">auto-stops</strong> on qualification or unsubscribe.
-            </div>
+      title:"🌱 Nurturer Agent — Details",
+      body:`<div style="display:flex;flex-direction:column;gap:14px">
+        <div style="background:var(--bg);border-radius:10px;padding:16px;border:1px solid var(--border)">
+          <div class="sp-section-label" style="margin-bottom:8px">What it does</div>
+          <div style="font-size:0.78rem;color:var(--dark);line-height:1.8">
+            Agent 2 runs a structured 14-day follow-up sequence with 8 touchpoints:<br><br>
+            Day 1 — 📱 Warm SMS check-in<br>
+            Day 2 — 📧 Educational email (rates overview)<br>
+            Day 3 — 📱 Value-add SMS (rate tip)<br>
+            Day 5 — 📧 Case study email ($400/mo savings)<br>
+            Day 7 — 📱 Soft CTA SMS (free rate check)<br>
+            Day 9 — 📧 FAQ email (pre-qual process)<br>
+            Day 11 — 📱 Social proof SMS<br>
+            Day 14 — 📧 Final breakup email<br><br>
+            Auto-stops on qualification, opt-out, or DND.
           </div>
-          <div class="g2">
-            <div class="at-stat"><div class="v" style="color:var(--blue)">4</div><div class="l">Active Sequences</div></div>
-            <div class="at-stat"><div class="v" style="color:var(--purple)">22</div><div class="l">Follow-ups Sent</div></div>
-            <div class="at-stat"><div class="v" style="color:var(--green)">3</div><div class="l">Completed</div></div>
-            <div class="at-stat"><div class="v" style="color:var(--yellow)">Day 5</div><div class="l">Avg Stage</div></div>
-          </div>
-          <div style="background:var(--bg2);border-radius:9px;padding:14px;border-left:2px solid var(--blue)">
-            <div class="sp-section-label" style="margin-bottom:4px">Active Sequences</div>
-            ${SEQ_DATA.map(s=>`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span style="font-size:0.72rem">${s.name}</span><div class="seq-wrap" style="gap:1px">${ALL_DAYS.map((d,i)=>{const done=s.sent.includes(d)&&d<s.day,cur=d===s.day,cls=done?"done":cur?"current":"";const line=i<ALL_DAYS.length-1?`<div class="seq-line ${done?"done":""}" style="width:6px;min-width:6px"></div>`:"";return `<div class="seq-dot ${cls}" style="width:18px;height:18px;font-size:0.48rem">${d}</div>${line}`}).join("")}</div></div>`).join("")}
-          </div>
-          <button class="sp-btn primary" onclick="closeModal('agentModal');showToast('📋 Nurturer log opened')">View Full Logs</button>
-        </div>`
+        </div>
+        <div class="g2">
+          <div class="at-stat"><div class="v">4</div><div class="l">Active Sequences</div></div>
+          <div class="at-stat"><div class="v">22</div><div class="l">Follow-ups Sent</div></div>
+          <div class="at-stat"><div class="v">3</div><div class="l">Completed</div></div>
+          <div class="at-stat"><div class="v">Day 5</div><div class="l">Avg Stage</div></div>
+        </div>
+        <div style="background:var(--bg);border-radius:9px;padding:13px;border-left:3px solid var(--blue)">
+          <div class="sp-section-label" style="margin-bottom:6px">📅 Active Sequences</div>
+          ${SEQ_DATA.map(s=>`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <span style="font-size:0.72rem;font-weight:600">${s.name}</span>
+            <div class="seq-wrap" style="gap:1px">${ALL_DAYS.map((d,i)=>{const done=s.sent.includes(d)&&d<s.day,cur=d===s.day,cls=done?"done":cur?"current":"";const line=i<ALL_DAYS.length-1?`<div class="seq-line ${done?"done":""}" style="width:6px;min-width:6px"></div>`:"";return`<div class="seq-dot ${cls}" style="width:18px;height:18px;font-size:0.48rem">${d}</div>${line}`;}).join("")}</div>
+          </div>`).join("")}
+        </div>
+        <button class="tb-btn primary" onclick="closeModal('agentModal');showToast('📋 Nurturer logs opened')">📋 View Full Logs</button>
+      </div>`
     }
   };
-  const d = data[type];
-  if(!d) return;
-  document.getElementById("modal-agent-title").textContent = d.title;
-  document.getElementById("modal-agent-body").innerHTML = d.body;
+  const d=data[type]; if(!d) return;
+  document.getElementById("modal-agent-title").textContent=d.title;
+  document.getElementById("modal-agent-body").innerHTML=d.body;
   document.getElementById("agentModal").classList.add("open");
 }
-function closeModal(id) { document.getElementById(id).classList.remove("open"); }
 
 // ═══════════════════════════════ FEED
 function renderFeed() {
-  const el = document.getElementById("activityFeed");
-  el.innerHTML = FEED_ITEMS.map(f=>`
+  document.getElementById("activityFeed").innerHTML = FEED_ITEMS.map(f=>`
     <div class="feed-item">
       <div class="feed-dot" style="background:${f.color}"></div>
       <div class="feed-body">
-        <div class="feed-msg">
-          <span class="feed-agent tag ${f.agentTag}" style="margin-right:5px">${f.agent}</span>
-          ${f.msg}
-        </div>
+        <div class="feed-msg"><span class="feed-agent tag ${f.agentTag}" style="margin-right:5px">${f.agent}</span>${f.msg}</div>
         <div class="feed-meta">${f.time}</div>
       </div>
     </div>`).join("");
-  document.getElementById("feed-count").textContent = FEED_ITEMS.length+" events";
+  document.getElementById("feed-count").textContent=FEED_ITEMS.length+" events";
 }
 
 function addFeedItem(color,agent,agentTag,msg) {
   FEED_ITEMS.unshift({color,agent,agentTag,msg,time:"just now"});
   renderFeed();
-  if(document.getElementById("page-logs").classList.contains("active")) renderLogs();
 }
 
 // ═══════════════════════════════ CHANNEL BARS
 function renderChannelBars() {
-  const el = document.getElementById("channelBars");
-  el.innerHTML = CHANNELS_DATA.map(c=>`
+  document.getElementById("channelBars").innerHTML = CHANNELS_DATA.map(c=>`
     <div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;font-size:0.68rem;margin-bottom:3px">
-        <span style="color:var(--light)">${c.icon} ${c.name} <span style="color:var(--muted)">${c.sent} sent</span></span>
+        <span style="color:var(--dark)">${c.icon} ${c.name} <span style="color:var(--muted)">${c.sent} sent</span></span>
         <span style="color:${c.color};font-weight:700">${c.rate}%</span>
       </div>
       <div class="pbar"><div class="pbar-fill" style="width:0%;background:${c.color}" data-w="${c.rate}"></div></div>
     </div>`).join("");
-  setTimeout(()=>{ document.querySelectorAll(".pbar-fill").forEach(el=>{ el.style.width=el.dataset.w+"%"; }); },100);
+  setTimeout(()=>document.querySelectorAll(".pbar-fill").forEach(el=>el.style.width=el.dataset.w+"%"),100);
 }
 
 // ═══════════════════════════════ MINI CHART
-let miniChartInstance = null;
+let miniChartInstance=null;
 function renderMiniChart() {
-  const ctx = document.getElementById("miniChart").getContext("2d");
+  const ctx=document.getElementById("miniChart").getContext("2d");
   if(miniChartInstance) miniChartInstance.destroy();
-  Chart.defaults.color="#64748b";
-  Chart.defaults.font.family="Inter";
-  miniChartInstance = new Chart(ctx,{
+  Chart.defaults.color="#9ca3af"; Chart.defaults.font.family="Inter";
+  miniChartInstance=new Chart(ctx,{
     type:"line",
     data:{
       labels:["8am","9am","10am","11am","12pm","1pm","2pm","3pm"],
       datasets:[
-        {label:"SMS",  data:[2,4,3,7,5,8,4,7],borderColor:"#34d399",backgroundColor:"rgba(52,211,153,0.05)",tension:0.4,fill:true,pointRadius:2,borderWidth:1.5},
-        {label:"Email",data:[1,2,2,5,3,6,3,5],borderColor:"#60a5fa",backgroundColor:"rgba(96,165,250,0.05)",tension:0.4,fill:true,pointRadius:2,borderWidth:1.5},
-        {label:"Voice",data:[1,2,1,3,2,4,2,3],borderColor:"#fbbf24",backgroundColor:"rgba(251,191,36,0.05)",tension:0.4,fill:true,pointRadius:2,borderWidth:1.5},
+        {label:"SMS",  data:[2,4,3,7,5,8,4,7],borderColor:"#10b981",backgroundColor:"rgba(16,185,129,0.05)",tension:0.4,fill:true,pointRadius:2,borderWidth:2},
+        {label:"Email",data:[1,2,2,5,3,6,3,5],borderColor:"#3b82f6",backgroundColor:"rgba(59,130,246,0.05)",tension:0.4,fill:true,pointRadius:2,borderWidth:2},
       ]
     },
-    options:{
-      responsive:true,animation:false,
-      plugins:{legend:{labels:{boxWidth:8,padding:10,font:{size:10}}}},
-      scales:{
-        x:{ticks:{font:{size:10}},grid:{color:"rgba(255,255,255,0.03)"}},
-        y:{ticks:{font:{size:10}},grid:{color:"rgba(255,255,255,0.03)"}},
-      }
-    }
+    options:{responsive:true,animation:false,plugins:{legend:{labels:{boxWidth:8,padding:10,font:{size:10}}}},
+      scales:{x:{ticks:{font:{size:10}},grid:{color:"rgba(0,0,0,0.04)"}},y:{ticks:{font:{size:10}},grid:{color:"rgba(0,0,0,0.04)"}}}}
   });
 }
 
 // ═══════════════════════════════ SEQ TRACKER
 function renderSeqTracker() {
-  const el = document.getElementById("seqTracker");
-  el.innerHTML = SEQ_DATA.map(s=>{
-    const typColor = s.type==="refinance"?"var(--blue)":"var(--green)";
-    const dots = ALL_DAYS.map((d,i)=>{
-      const done=s.sent.includes(d)&&d<s.day, cur=d===s.day;
-      const cls=done?"done":cur?"current":"";
+  document.getElementById("seqTracker").innerHTML = SEQ_DATA.map(s=>{
+    const typeColor=s.type==="refinance"?"var(--blue)":"var(--green)";
+    const dots=ALL_DAYS.map((d,i)=>{
+      const done=s.sent.includes(d)&&d<s.day,cur=d===s.day,cls=done?"done":cur?"current":"";
       const line=i<ALL_DAYS.length-1?`<div class="seq-line ${done?"done":""}"></div>`:"";
       return `<div class="seq-dot ${cls}" title="Day ${d}">${d}</div>${line}`;
     }).join("");
     return `
-      <div style="background:var(--bg2);border-radius:9px;padding:12px 14px">
+      <div style="background:var(--bg);border-radius:10px;padding:13px 15px;border:1px solid var(--border)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div>
-            <div style="font-size:0.78rem;font-weight:700">${s.name}</div>
-            <div style="font-size:0.62rem;color:${typColor};margin-top:2px;text-transform:capitalize">${s.type}</div>
+          <div><div style="font-size:0.78rem;font-weight:700">${s.name}</div>
+            <div style="font-size:0.62rem;color:${typeColor};margin-top:2px;text-transform:capitalize">${s.type==="purchase"?"🏠 ":"🔄 "}${s.type}</div>
           </div>
           <div style="font-size:0.65rem;color:var(--muted)">${s.sent.length}/${ALL_DAYS.length} sent · Day ${s.day}</div>
         </div>
@@ -1224,191 +1183,153 @@ function renderSeqTracker() {
 }
 
 // ═══════════════════════════════ LEAD TABLE
-let leadFilter = "all", leadSearch = "", leadSortKey = null, leadSortDir = 1;
+let leadFilter="all",leadSearch="",leadSortKey=null,leadSortDir=1;
 function renderLeadTable() {
-  let rows = [...LEADS_DATA];
+  let rows=[...LEADS_DATA];
   if(leadFilter!=="all") rows=rows.filter(l=>l.status===leadFilter||l.type===leadFilter);
   if(leadSearch) rows=rows.filter(l=>[l.name,l.email,l.type,l.status].some(v=>v.toLowerCase().includes(leadSearch)));
   if(leadSortKey) rows.sort((a,b)=>(a[leadSortKey]||"").localeCompare(b[leadSortKey]||"")*leadSortDir);
-
-  const statusStyle = {
-    new:"tag-yellow",opener:"tag-purple",nurture:"tag-blue",qualified:"tag-green",lost:"tag-red"
-  };
-  const statusLabel = {
-    new:"New",opener:"Opener Active",nurture:"Nurturing",qualified:"Qualified",lost:"Lost"
-  };
-  document.getElementById("leadTableBody").innerHTML = rows.map(l=>`
+  const sStyle={new:"tag-yellow",opener:"tag-orange",nurture:"tag-blue",qualified:"tag-green",lost:"tag-red"};
+  const sLabel={new:"🆕 New",opener:"⚡ Opener",nurture:"🌱 Nurturing",qualified:"🎯 Qualified",lost:"❌ Lost"};
+  document.getElementById("leadTableBody").innerHTML=rows.map(l=>`
     <tr onclick="openPanel('${l.id}')">
       <td><div class="lead-name">${l.name}</div><div class="lead-id">${l.id}</div></td>
-      <td><span class="tag ${l.type==="purchase"?"tag-green":"tag-blue"}">${l.type}</span></td>
+      <td><span class="tag ${l.type==="purchase"?"tag-green":"tag-blue"}">${l.type==="purchase"?"🏠":"🔄"} ${l.type}</span></td>
       <td style="color:var(--muted);font-size:0.72rem">${l.source}</td>
-      <td><span class="tag ${statusStyle[l.status]||"tag-muted"}">${statusLabel[l.status]||l.status}</span></td>
-      <td>
-        <div class="ch-pip">
-          <div class="ch-dot" style="background:${l.channels.sms?"rgba(52,211,153,0.15)":"rgba(255,255,255,0.04)"}" title="SMS">📱</div>
-          <div class="ch-dot" style="background:${l.channels.email?"rgba(96,165,250,0.15)":"rgba(255,255,255,0.04)"}" title="Email">📧</div>
-          <div class="ch-dot" style="background:${l.channels.voice?"rgba(251,191,36,0.15)":"rgba(255,255,255,0.04)"}" title="Voice">📞</div>
-          <div class="ch-dot" style="background:${l.channels.msg?"rgba(155,138,251,0.15)":"rgba(255,255,255,0.04)"}" title="Messenger">💬</div>
-        </div>
-      </td>
-      <td style="font-size:0.72rem;color:var(--light)">${l.agent}</td>
+      <td><span class="tag ${sStyle[l.status]||"tag-gray"}">${sLabel[l.status]||l.status}</span></td>
+      <td><div class="ch-pip">
+        <div class="ch-dot" style="background:${l.channels.sms?"rgba(16,185,129,0.1)":"var(--bg)"}">📱</div>
+        <div class="ch-dot" style="background:${l.channels.email?"rgba(59,130,246,0.1)":"var(--bg)"}">📧</div>
+        <div class="ch-dot" style="background:${l.channels.voice?"rgba(245,158,11,0.1)":"var(--bg)"}">📞</div>
+        <div class="ch-dot" style="background:${l.channels.msg?"rgba(107,114,128,0.1)":"var(--bg)"}">💬</div>
+      </div></td>
+      <td style="font-size:0.72rem;color:var(--dark)">${l.agent}</td>
       <td style="font-size:0.7rem;color:var(--muted)">${l.created}</td>
       <td style="font-size:0.72rem;color:var(--muted)">${l.day>0?"Day "+l.day:"—"}</td>
-      <td>
-        <div style="display:flex;gap:5px">
-          <button onclick="event.stopPropagation();showToast('📱 SMS sent to ${l.name}')" style="padding:4px 8px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:0.62rem;cursor:pointer">SMS</button>
-          <button onclick="event.stopPropagation();openPanel('${l.id}')" style="padding:4px 8px;border-radius:5px;border:1px solid rgba(155,138,251,0.3);background:rgba(155,138,251,0.08);color:var(--purple);font-size:0.62rem;cursor:pointer">View</button>
-        </div>
-      </td>
+      <td><div style="display:flex;gap:5px">
+        <button onclick="event.stopPropagation();showToast('📱 SMS sent to ${l.name}')" style="padding:4px 8px;border-radius:5px;border:1px solid var(--border);background:#fff;color:var(--dark);font-size:0.62rem;cursor:pointer;font-family:inherit">📱 SMS</button>
+        <button onclick="event.stopPropagation();openPanel('${l.id}')" style="padding:4px 8px;border-radius:5px;border:1px solid var(--border2);background:var(--black);color:#fff;font-size:0.62rem;cursor:pointer;font-family:inherit">View →</button>
+      </div></td>
     </tr>`).join("");
-  document.getElementById("nb-leads").textContent = LEADS_DATA.length;
+  document.getElementById("nb-leads").textContent=LEADS_DATA.length;
 }
 
-function setFilter(f,el) {
-  leadFilter=f;
-  document.querySelectorAll("#page-leads .filter-pill").forEach(p=>p.classList.remove("active"));
-  el.classList.add("active");
-  renderLeadTable();
-}
-function filterLeads() { leadSearch=document.getElementById("leadSearch").value.toLowerCase(); renderLeadTable(); }
-function sortLeads(key) { leadSortKey===key?leadSortDir*=-1:(leadSortKey=key,leadSortDir=1); renderLeadTable(); }
+function setFilter(f,el){leadFilter=f;document.querySelectorAll("#page-leads .filter-pill").forEach(p=>p.classList.remove("active"));el.classList.add("active");renderLeadTable();}
+function filterLeads(){leadSearch=document.getElementById("leadSearch").value.toLowerCase();renderLeadTable();}
+function sortLeads(key){leadSortKey===key?leadSortDir*=-1:(leadSortKey=key,leadSortDir=1);renderLeadTable();}
 
-// ═══════════════════════════════ CONVERSATIONS PAGE
+// ═══════════════════════════════ CONVERSATIONS
 function renderConversations() {
-  const leads = LEADS_DATA.filter(l=>CONVERSATIONS[l.id]);
-  document.getElementById("convoList").innerHTML = leads.map(l=>`
-    <div onclick="showConvo('${l.id}')" style="padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.1s" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background=''">
+  const leads=LEADS_DATA.filter(l=>CONVERSATIONS[l.id]);
+  document.getElementById("convoList").innerHTML=leads.map(l=>`
+    <div onclick="showConvo('${l.id}')" style="padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.1s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
-        <div style="font-size:0.8rem;font-weight:700">${l.name}</div>
-        <span class="tag ${l.type==="purchase"?"tag-green":"tag-blue"}" style="font-size:0.58rem">${l.type}</span>
+        <div style="font-size:0.82rem;font-weight:700">${l.name}</div>
+        <span class="tag ${l.type==="purchase"?"tag-green":"tag-blue"}" style="font-size:0.58rem">${l.type==="purchase"?"🏠":"🔄"} ${l.type}</span>
       </div>
-      <div style="font-size:0.68rem;color:var(--muted)">${CONVERSATIONS[l.id].length} messages · ${l.replies} replies</div>
+      <div style="font-size:0.68rem;color:var(--muted)">💬 ${CONVERSATIONS[l.id].length} messages · ${l.replies} replies</div>
     </div>`).join("");
-  document.getElementById("nb-conv").textContent = leads.length;
+  document.getElementById("nb-conv").textContent=leads.length;
 }
 
 function showConvo(leadId) {
-  const lead = LEADS_DATA.find(l=>l.id===leadId);
-  const convo = CONVERSATIONS[leadId]||[];
-  const view = document.getElementById("convoView");
-  view.innerHTML = `
+  const lead=LEADS_DATA.find(l=>l.id===leadId);
+  const convo=CONVERSATIONS[leadId]||[];
+  const view=document.getElementById("convoView");
+  view.innerHTML=`
     <div class="card-header">
       <div class="card-header-left"><h3>${lead.name}</h3><p>${lead.phone} · ${lead.type}</p></div>
       <div style="display:flex;gap:6px">
-        <button class="tb-btn" onclick="showToast('📱 SMS sent to ${lead.name}')">SMS</button>
-        <button class="tb-btn primary" onclick="showToast('📞 Calling ${lead.name}…')">Call</button>
+        <button class="tb-btn" onclick="showToast('📱 SMS sent to ${lead.name}')">📱 SMS</button>
+        <button class="tb-btn primary" onclick="showToast('📞 Calling ${lead.name}…')">📞 Call</button>
       </div>
     </div>
     <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px">
       ${convo.map(m=>`
         <div style="display:flex;flex-direction:column;align-items:${m.dir==="out"?"flex-end":"flex-start"}">
           <div class="msg-bubble msg-${m.dir}">
-            <div style="font-size:0.58rem;color:var(--muted);margin-bottom:2px">${m.ch.toUpperCase()}</div>
-            ${m.msg}
+            <div style="font-size:0.58rem;opacity:0.6;margin-bottom:2px">${m.ch.toUpperCase()}</div>${m.msg}
           </div>
           <div class="msg-meta">${m.time}</div>
         </div>`).join("")}
     </div>
     <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
-      <input style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:0.75rem;color:var(--text);outline:none;font-family:inherit" placeholder="Type a message…" onkeypress="if(event.key==='Enter'){showToast('💬 Message sent via SMS');this.value=''}"/>
-      <button class="tb-btn primary" onclick="showToast('💬 Message sent!')">Send</button>
+      <input style="flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 13px;font-size:0.75rem;color:var(--black);outline:none;font-family:inherit" placeholder="Type a message…" onkeypress="if(event.key==='Enter'){showToast('💬 Message sent!');this.value=''}"/>
+      <button class="tb-btn primary" onclick="showToast('💬 Message sent!')">Send →</button>
     </div>`;
-  view.style.display = "flex";
-  view.style.flexDirection = "column";
+  view.style.display="flex"; view.style.flexDirection="column";
 }
 
 // ═══════════════════════════════ CHANNEL PAGE
-let channelChartInstance = null;
+let channelChartInstance=null;
 function renderChannelPage() {
-  // Toggles
-  document.getElementById("channelToggles").innerHTML = CHANNELS_DATA.map(c=>`
+  document.getElementById("channelToggles").innerHTML=CHANNELS_DATA.map(c=>`
     <div class="ch-card">
       <div class="ch-icon-wrap" style="background:${c.color}18">${c.icon}</div>
-      <div class="ch-info">
-        <div class="ch-name">${c.name}</div>
-        <div class="ch-sub">${c.provider} · ${c.sent} sent today</div>
-      </div>
+      <div class="ch-info"><div class="ch-name">${c.name}</div><div class="ch-sub">${c.provider} · ${c.sent} sent today</div></div>
       <div class="ch-toggle ${c.on?"on":""}" onclick="toggleChannel('${c.id}',this)"></div>
     </div>`).join("");
-
-  // Rate bars
-  document.getElementById("channelRates").innerHTML = CHANNELS_DATA.map(c=>`
+  document.getElementById("channelRates").innerHTML=CHANNELS_DATA.map(c=>`
     <div>
       <div style="display:flex;justify-content:space-between;font-size:0.72rem;margin-bottom:4px">
-        <span style="color:var(--light)">${c.icon} ${c.name}</span>
+        <span style="color:var(--dark)">${c.icon} ${c.name}</span>
         <span style="color:${c.color};font-weight:700">${c.rate}% response rate</span>
       </div>
       <div class="pbar"><div class="pbar-fill" style="width:0%;background:${c.color}" data-w="${c.rate}"></div></div>
     </div>`).join("");
   setTimeout(()=>document.querySelectorAll(".pbar-fill").forEach(el=>el.style.width=el.dataset.w+"%"),100);
-
-  // Chart
-  const ctx = document.getElementById("channelChart").getContext("2d");
+  const ctx=document.getElementById("channelChart").getContext("2d");
   if(channelChartInstance) channelChartInstance.destroy();
-  channelChartInstance = new Chart(ctx,{
-    type:"bar",
-    data:{
-      labels:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-      datasets:CHANNELS_DATA.map(c=>({
-        label:c.name,data:[2,4,3,7,5,8,c.sent].map(v=>Math.round(v*(0.5+Math.random()))),
-        backgroundColor:c.color+"33",borderColor:c.color,borderWidth:1.5,borderRadius:4
-      }))
-    },
-    options:{responsive:true,plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},scales:{x:{grid:{color:"rgba(255,255,255,0.03)"},ticks:{font:{size:10}}},y:{grid:{color:"rgba(255,255,255,0.03)"},ticks:{font:{size:10}}}}}
-  });
+  channelChartInstance=new Chart(ctx,{type:"bar",data:{
+    labels:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+    datasets:CHANNELS_DATA.filter(c=>c.sent>0).map(c=>({label:c.name,data:[2,4,3,7,5,8,c.sent].map(v=>Math.round(v*(0.5+Math.random()))),backgroundColor:c.color+"22",borderColor:c.color,borderWidth:2,borderRadius:5}))
+  },options:{responsive:true,plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},scales:{x:{grid:{color:"rgba(0,0,0,0.04)"},ticks:{font:{size:10}}},y:{grid:{color:"rgba(0,0,0,0.04)"},ticks:{font:{size:10}}}}}});
 }
 
-function toggleChannel(id, el) {
-  const c = CHANNELS_DATA.find(c=>c.id===id);
-  if(c) { c.on=!c.on; el.classList.toggle("on"); showToast(`${c.on?"✅":"🚫"} ${c.name} ${c.on?"enabled":"disabled"}`); }
-}
+function toggleChannel(id,el){const c=CHANNELS_DATA.find(c=>c.id===id);if(c){c.on=!c.on;el.classList.toggle("on");showToast(`${c.on?"✅":"🚫"} ${c.name} ${c.on?"enabled":"disabled"}`);}}
 
 // ═══════════════════════════════ ANALYTICS
 let a1=null,a2=null;
-function renderAnalytics() {
+function renderAnalytics(){
   if(a1){a1.destroy();a2.destroy();}
-  a1=new Chart(document.getElementById("analyticsChart1").getContext("2d"),{type:"bar",data:{labels:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],datasets:[{label:"SMS",data:[5,8,6,12,9,14,7],backgroundColor:"rgba(52,211,153,0.3)",borderColor:"#34d399",borderWidth:1.5,borderRadius:3},{label:"Email",data:[3,5,4,8,6,10,5],backgroundColor:"rgba(96,165,250,0.3)",borderColor:"#60a5fa",borderWidth:1.5,borderRadius:3}]},options:{responsive:true,plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},scales:{x:{grid:{color:"rgba(255,255,255,0.03)"}},y:{grid:{color:"rgba(255,255,255,0.03)"}}}}});
-  a2=new Chart(document.getElementById("analyticsChart2").getContext("2d"),{type:"doughnut",data:{labels:["Nurturing","Qualified","Opener Active","New","Lost"],datasets:[{data:[3,1,1,1,1],backgroundColor:["#60a5fa33","#34d39933","#9b8afb33","#fbbf2433","#f8717133"],borderColor:["#60a5fa","#34d399","#9b8afb","#fbbf24","#f87171"],borderWidth:2}]},options:{responsive:true,cutout:"65%",plugins:{legend:{position:"bottom",labels:{boxWidth:10,font:{size:10}}}}}});
-
-  // Funnel
-  const funnel=[{label:"Total Leads",val:7,pct:100,color:"#9b8afb"},{label:"Opener Fired",val:6,pct:86,color:"#60a5fa"},{label:"Replied",val:4,pct:57,color:"#34d399"},{label:"Qualified",val:1,pct:14,color:"#fbbf24"}];
-  document.getElementById("funnelChart").innerHTML = funnel.map(f=>`
-    <div style="margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;font-size:0.72rem;margin-bottom:4px">
-        <span style="color:var(--light)">${f.label}</span>
+  a1=new Chart(document.getElementById("analyticsChart1").getContext("2d"),{type:"bar",data:{labels:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],datasets:[{label:"📱 SMS",data:[5,8,6,12,9,14,7],backgroundColor:"rgba(16,185,129,0.2)",borderColor:"#10b981",borderWidth:2,borderRadius:4},{label:"📧 Email",data:[3,5,4,8,6,10,5],backgroundColor:"rgba(59,130,246,0.2)",borderColor:"#3b82f6",borderWidth:2,borderRadius:4}]},options:{responsive:true,plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},scales:{x:{grid:{color:"rgba(0,0,0,0.04)"}},y:{grid:{color:"rgba(0,0,0,0.04)"}}}}});
+  a2=new Chart(document.getElementById("analyticsChart2").getContext("2d"),{type:"doughnut",data:{labels:["🌱 Nurturing","🎯 Qualified","⚡ Opener","🆕 New","❌ Lost"],datasets:[{data:[3,1,1,1,1],backgroundColor:["#3b82f622","#10b98122","#f59e0b22","#6b728022","#ef444422"],borderColor:["#3b82f6","#10b981","#f59e0b","#6b7280","#ef4444"],borderWidth:2}]},options:{responsive:true,cutout:"65%",plugins:{legend:{position:"bottom",labels:{boxWidth:10,font:{size:10}}}}}});
+  const funnel=[{label:"👥 Total Leads",val:7,pct:100,color:"#111827"},{label:"⚡ Opener Fired",val:6,pct:86,color:"#3b82f6"},{label:"💬 Replied",val:4,pct:57,color:"#10b981"},{label:"🎯 Qualified",val:1,pct:14,color:"#f59e0b"}];
+  document.getElementById("funnelChart").innerHTML=funnel.map(f=>`
+    <div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:0.72rem;margin-bottom:5px">
+        <span style="font-weight:600;color:var(--black)">${f.label}</span>
         <span style="color:${f.color};font-weight:700">${f.val} (${f.pct}%)</span>
       </div>
-      <div class="pbar" style="height:6px"><div class="pbar-fill" style="width:0%;background:${f.color}" data-w="${f.pct}"></div></div>
+      <div class="pbar" style="height:7px"><div class="pbar-fill" style="width:0%;background:${f.color}" data-w="${f.pct}"></div></div>
     </div>`).join("");
   setTimeout(()=>document.querySelectorAll(".pbar-fill").forEach(el=>el.style.width=el.dataset.w+"%"),100);
 }
 
 // ═══════════════════════════════ LOGS
-function renderLogs() {
-  const el = document.getElementById("logContainer");
-  const levels = {INFO:"ll-info",SUCCESS:"ll-success",WARN:"ll-warn",ERROR:"ll-error"};
-  el.innerHTML = LOG_LINES.map(l=>`
+function renderLogs(){
+  const levels={INFO:"ll-info",SUCCESS:"ll-success",WARN:"ll-warn",ERROR:"ll-error"};
+  document.getElementById("logContainer").innerHTML=LOG_LINES.map(l=>`
     <div class="log-line">
       <span class="log-time">${l.time}</span>
       <span class="log-level ${levels[l.level]||""}">[${l.level}]</span>
-      <span style="color:var(--light)">${l.msg}</span>
+      <span style="color:var(--dark)">${l.msg}</span>
     </div>`).join("");
 }
-
-function clearLogs() { document.getElementById("logContainer").innerHTML=""; showToast("🗑 Logs cleared"); }
+function clearLogs(){document.getElementById("logContainer").innerHTML="";showToast("🗑️ Logs cleared");}
 
 // ═══════════════════════════════ ADD LEAD
-function addNewLead() {
-  const name  = document.getElementById("nl-name").value.trim();
-  const phone = document.getElementById("nl-phone").value.trim();
-  const email = document.getElementById("nl-email").value.trim();
-  const type  = document.getElementById("nl-type").value;
-  if(!name||!phone){showToast("⚠ Name and phone are required");return;}
-  const id = "L00"+(LEADS_DATA.length+1);
+function addNewLead(){
+  const name=document.getElementById("nl-name").value.trim();
+  const phone=document.getElementById("nl-phone").value.trim();
+  const email=document.getElementById("nl-email").value.trim();
+  const type=document.getElementById("nl-type").value;
+  if(!name||!phone){showToast("⚠️ Name and phone are required");return;}
+  const id="L00"+(LEADS_DATA.length+1);
   LEADS_DATA.unshift({id,name,email,phone,type,status:"new",source:"Manual Entry",day:0,agent:"Manager",channels:{sms:0,email:0,voice:0,msg:0},replies:0,created:"just now"});
-  document.getElementById("nb-leads").textContent = LEADS_DATA.length;
-  document.getElementById("sv-total").textContent = LEADS_DATA.length;
-  addFeedItem("#9b8afb","MANAGER","tag-purple",`New lead added manually — ${name} (${type}). Classifying with Claude…`);
+  document.getElementById("nb-leads").textContent=LEADS_DATA.length;
+  document.getElementById("sv-total").textContent=LEADS_DATA.length;
+  addFeedItem("#111827","MANAGER","tag-black",`🧠 New lead added manually — ${name} (${type}). Classifying with Claude…`);
   LOG_LINES.unshift({time:new Date().toLocaleTimeString(),level:"INFO",msg:`[MANAGER] New lead manually added: ${name} (${id})`});
   closeModal("newLeadModal");
   showToast(`🚀 ${name} added — agents will fire in 90s`);
@@ -1417,45 +1338,55 @@ function addNewLead() {
   document.getElementById("nl-email").value="";
 }
 
-// ═══════════════════════════════ LIVE SIMULATION
-const SIM = [
-  ()=>{ addFeedItem("#34d399","OPENER","tag-green","SMS sent to Tony Patel — 'Hi Tony! Michael Davis from Bright Path Lending here…'"); document.getElementById("task-opener").textContent="SMS sent to Tony Patel ✓. Queuing email…"; },
-  ()=>{ addFeedItem("#60a5fa","OPENER","tag-green","Email sent to Tony Patel — Subject: 'Your purchase loan enquiry, Tony'"); document.getElementById("sv-msgs").textContent=parseInt(document.getElementById("sv-msgs").textContent)+2; },
-  ()=>{ addFeedItem("#fbbf24","OPENER","tag-yellow","Bland AI voice call initiated → +1(720)501-3344"); document.getElementById("sv-calls").textContent=parseInt(document.getElementById("sv-calls").textContent)+1; document.getElementById("task-opener").textContent="Voice call in progress via Bland AI…"; },
-  ()=>{ addFeedItem("#9b8afb","OPENER","tag-green","Messenger message sent to Tony Patel via FB Graph API"); },
-  ()=>{ addFeedItem("#60a5fa","NURTURER","tag-blue","14-day nurture sequence started for Tony Patel (Purchase)"); document.getElementById("n-active").textContent=parseInt(document.getElementById("n-active").textContent)+1; document.getElementById("task-nurturer").textContent="Day 1 sequence running for Tony Patel…"; },
-  ()=>{
-    const lead=LEADS_DATA.find(l=>l.id==="L005");
-    if(lead){lead.status="opener";lead.agent="Opener";lead.channels={sms:1,email:1,voice:1,msg:1};}
-    addFeedItem("#9b8afb","MANAGER","tag-purple","New lead received — Angela Foster (Refinance). Classifying with claude-sonnet-4-6…");
-    document.getElementById("task-manager").textContent="Classifying Angela Foster…";
-    document.getElementById("sv-total").textContent=parseInt(document.getElementById("sv-total").textContent)+1;
-    LEADS_DATA.unshift({id:"L008",name:"Angela Foster",email:"angela@email.com",phone:"+1(602)388-9910",type:"refinance",status:"new",source:"FB Lead Ads",day:0,agent:"Manager",channels:{sms:0,email:0,voice:0,msg:0},replies:0,created:"just now"});
-  },
-  ()=>{ addFeedItem("#9b8afb","MANAGER","tag-purple","Angela Foster → Refinance | Medium Urgency | Tone: Empathetic. Opener queued in 90s."); document.getElementById("m-routed").textContent=parseInt(document.getElementById("m-routed").textContent)+1; },
-  ()=>{
-    const lead=LEADS_DATA.find(l=>l.id==="L005");
-    if(lead){lead.status="qualified";lead.agent="Manager";}
-    addFeedItem("#34d399","MANAGER","tag-green","🎯 Tony Patel QUALIFIED — LO Michael Davis alerted via SMS");
-    document.getElementById("sv-qual").textContent=parseInt(document.getElementById("sv-qual").textContent)+1;
-    document.getElementById("m-handoff").textContent=parseInt(document.getElementById("m-handoff").textContent)+1;
-    document.getElementById("task-manager").textContent="LO alerted — Tony Patel ready for callback!";
-    showToast("🎯 Tony Patel QUALIFIED — LO notified!");
-  },
+// ═══════════════════════════════ PROFILE
+function saveProfile(){
+  const name=document.getElementById("p-username").value.trim();
+  if(!name){showToast("⚠️ Name cannot be empty");return;}
+  document.getElementById("profile-display-name").textContent=name;
+  showToast("✅ Profile saved!");
+}
+
+function saveLODetails(){
+  const loName=document.getElementById("p-lo-name").value.trim();
+  if(!loName){showToast("⚠️ LO name cannot be empty");return;}
+  showToast("✅ LO details saved! Messages will use new details.");
+}
+
+function changePassword(){
+  const curr=document.getElementById("p-curr-pass").value;
+  const newP=document.getElementById("p-new-pass").value;
+  const conf=document.getElementById("p-confirm-pass").value;
+  if(!curr||!newP){showToast("⚠️ Fill in all password fields");return;}
+  if(newP!==conf){showToast("⚠️ New passwords don't match");return;}
+  if(newP.length<8){showToast("⚠️ Password must be at least 8 characters");return;}
+  showToast("🔐 Password updated! Please log in again.");
+  document.getElementById("p-curr-pass").value="";
+  document.getElementById("p-new-pass").value="";
+  document.getElementById("p-confirm-pass").value="";
+}
+
+// ═══════════════════════════════ LIVE SIM
+const SIM=[
+  ()=>{addFeedItem("#10b981","OPENER","tag-green","📱 SMS sent to Tony Patel — 'Hi Tony! Uday Yewale from YZX…'");document.getElementById("task-opener").textContent="📱 SMS sent to Tony Patel ✓. Queuing email…";},
+  ()=>{addFeedItem("#3b82f6","OPENER","tag-green","📧 Email sent to Tony Patel — Subject: 'Your purchase loan enquiry, Tony'");document.getElementById("sv-msgs").textContent=parseInt(document.getElementById("sv-msgs").textContent)+2;},
+  ()=>{addFeedItem("#3b82f6","NURTURER","tag-blue","📅 14-day nurture sequence started for Tony Patel (Purchase)");document.getElementById("n-active").textContent=parseInt(document.getElementById("n-active").textContent)+1;document.getElementById("task-nurturer").textContent="📅 Day 1 sequence running for Tony Patel…";},
+  ()=>{const lead=LEADS_DATA.find(l=>l.id==="L005");if(lead){lead.status="opener";lead.agent="Opener";lead.channels={sms:1,email:1,voice:0,msg:0};}addFeedItem("#111827","MANAGER","tag-black","🧠 New lead received — Angela Foster (Refinance). Classifying with claude-sonnet-4-6…");document.getElementById("task-manager").textContent="🧠 Classifying Angela Foster…";document.getElementById("sv-total").textContent=parseInt(document.getElementById("sv-total").textContent)+1;LEADS_DATA.unshift({id:"L008",name:"Angela Foster",email:"angela@email.com",phone:"+1(602)388-9910",type:"refinance",status:"new",source:"FB Lead Ads",day:0,agent:"Manager",channels:{sms:0,email:0,voice:0,msg:0},replies:0,created:"just now"});},
+  ()=>{addFeedItem("#111827","MANAGER","tag-black","✅ Angela Foster → Refinance | Medium Urgency | Tone: Empathetic. Opener queued in 90s.");document.getElementById("m-routed").textContent=parseInt(document.getElementById("m-routed").textContent)+1;},
+  ()=>{const lead=LEADS_DATA.find(l=>l.id==="L005");if(lead){lead.status="qualified";lead.agent="Manager";}addFeedItem("#10b981","MANAGER","tag-green","🎯 Tony Patel QUALIFIED — LO Uday Yewale alerted!");document.getElementById("sv-qual").textContent=parseInt(document.getElementById("sv-qual").textContent)+1;document.getElementById("m-handoff").textContent=parseInt(document.getElementById("m-handoff").textContent)+1;document.getElementById("task-manager").textContent="🎯 LO alerted — Tony Patel ready for callback!";showToast("🎯 Tony Patel QUALIFIED — LO notified!");},
 ];
 let simIdx=0;
 function runSim(){if(simIdx<SIM.length){SIM[simIdx]();simIdx++;}setTimeout(runSim,3500+Math.random()*2000);}
 
 // ═══════════════════════════════ INIT
-function init() {
+function init(){
   renderFeed();
   renderChannelBars();
   renderMiniChart();
   renderSeqTracker();
-  setTimeout(runSim, 2500);
+  setTimeout(runSim,2500);
 }
-window.addEventListener("load", init);
-document.addEventListener("keydown", e=>{ if(e.key==="Escape"){closePanel();document.querySelectorAll(".modal-overlay").forEach(m=>m.classList.remove("open"));} });
+window.addEventListener("load",init);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closePanel();document.querySelectorAll(".modal-overlay").forEach(m=>m.classList.remove("open"));}});
 </script>
 </body>
 </html>
