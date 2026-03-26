@@ -505,6 +505,92 @@ def bland_callback():
 
 
 # ════════════════════════════════════════════════════════════
+# Dashboard API — Real Data Endpoints
+# ════════════════════════════════════════════════════════════
+
+@app.route("/api/stats", methods=["GET"])
+@login_required
+def api_stats():
+    stats = db.get_stats()
+    return jsonify(stats), 200
+
+
+@app.route("/api/leads", methods=["GET"])
+@login_required
+def api_leads():
+    leads = db.get_all_leads()
+    return jsonify(leads), 200
+
+
+@app.route("/api/leads/<lead_id>", methods=["GET"])
+@login_required
+def api_lead_detail(lead_id):
+    lead = db.get_lead(lead_id)
+    if not lead:
+        return jsonify({"error": "Not found"}), 404
+    steps = db.get_sequence_steps(lead_id)
+    convo = db.get_conversation(lead_id)
+    return jsonify({"lead": lead, "steps": steps, "conversation": convo}), 200
+
+
+@app.route("/api/conversations/<lead_id>", methods=["GET"])
+@login_required
+def api_conversation(lead_id):
+    convo = db.get_conversation(lead_id)
+    return jsonify(convo), 200
+
+
+@app.route("/api/logs", methods=["GET"])
+@login_required
+def api_logs():
+    logs = db.get_logs(limit=300)
+    return jsonify(logs), 200
+
+
+@app.route("/api/leads/new", methods=["POST"])
+@login_required
+def api_new_lead():
+    """Create a new lead manually from the dashboard and fire agents."""
+    data = request.get_json(silent=True) or {}
+    name  = data.get("name", "").strip()
+    phone = data.get("phone", "").strip()
+    email = data.get("email", "").strip()
+    lead_type = data.get("lead_type", "unknown")
+
+    if not name or not phone:
+        return jsonify({"error": "name and phone required"}), 400
+
+    # Create contact in GHL first
+    try:
+        result = ghl.create_contact(name=name, phone=phone, email=email)
+        contact_id = result.get("contact", {}).get("id") or result.get("id")
+    except Exception as e:
+        log.error(f"GHL create_contact failed: {e}")
+        return jsonify({"error": "Failed to create GHL contact"}), 500
+
+    if not contact_id:
+        return jsonify({"error": "GHL did not return a contact ID"}), 500
+
+    lead = {
+        "id": contact_id,
+        "name": name,
+        "phone": phone,
+        "email": email,
+        "lead_type": lead_type,
+        "source": "manual",
+        "notes": "",
+        "fb_psid": None,
+        "raw": {},
+    }
+
+    import threading
+    threading.Thread(target=manager.handle_new_lead, args=(lead,), daemon=True).start()
+    db.add_log("INFO", f"Manual lead added from dashboard: {name} ({phone})", "SERVER")
+
+    return jsonify({"status": "ok", "contact_id": contact_id}), 200
+
+
+# ════════════════════════════════════════════════════════════
 # Health Check
 # ════════════════════════════════════════════════════════════
 

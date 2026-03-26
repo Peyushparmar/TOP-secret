@@ -304,3 +304,29 @@ def is_dnd(contact_id: str) -> bool:
     if contact is None:
         return False
     return bool(contact.get("dnd", False))
+
+
+def create_contact(name: str, phone: str, email: str = "") -> dict:
+    """Creates a new contact in GHL and returns the API response."""
+    first, *rest = name.strip().split(" ", 1)
+    last = rest[0] if rest else ""
+    payload = {
+        "locationId": GHL_LOCATION_ID,
+        "firstName":  first,
+        "lastName":   last,
+        "phone":      phone,
+        "source":     "manual-dashboard",
+    }
+    if email:
+        payload["email"] = email
+    try:
+        resp = _session.post(
+            f"{GHL_BASE_URL}/contacts/",
+            json=payload,
+            timeout=_TIMEOUT
+        )
+        resp.raise_for_status()
+        return resp.json()
+    except Exception as e:
+        log.error(f"GHL create_contact failed: {e}")
+        raise

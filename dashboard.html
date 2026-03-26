@@ -810,78 +810,123 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--bla
 <div id="toast"></div>
 
 <script>
-// ═══════════════════════════════ DATA
-const LEADS_DATA = [
-  {id:"L001",name:"James Wilson",   email:"james@email.com",  phone:"+1(626)204-3891",type:"purchase", status:"opener",   source:"FB Lead Ads",day:0, agent:"Opener",  channels:{sms:1,email:1,voice:1,msg:1},  replies:0,created:"2 min ago"},
-  {id:"L002",name:"Sarah Chen",     email:"sarah@email.com",  phone:"+1(415)778-2200",type:"refinance",status:"nurture",  source:"FB Lead Ads",day:5, agent:"Nurturer",channels:{sms:1,email:1,voice:1,msg:0},  replies:2,created:"1 hr ago"},
-  {id:"L003",name:"Marcus Webb",    email:"marcus@email.com", phone:"+1(310)555-4411",type:"purchase", status:"qualified",source:"FB Lead Ads",day:3, agent:"Manager", channels:{sms:1,email:1,voice:1,msg:1},  replies:5,created:"3 hr ago"},
-  {id:"L004",name:"Diane Ruiz",     email:"diane@email.com",  phone:"+1(213)666-9900",type:"refinance",status:"nurture",  source:"FB Lead Ads",day:9, agent:"Nurturer",channels:{sms:1,email:1,voice:0,msg:0},  replies:1,created:"4 hr ago"},
-  {id:"L005",name:"Tony Patel",     email:"tony@email.com",   phone:"+1(720)501-3344",type:"purchase", status:"new",      source:"FB Lead Ads",day:0, agent:"Manager", channels:{sms:0,email:0,voice:0,msg:0},  replies:0,created:"just now"},
-  {id:"L006",name:"Rachel Monroe",  email:"rachel@email.com", phone:"+1(503)221-8801",type:"refinance",status:"nurture",  source:"FB Lead Ads",day:14,agent:"Nurturer",channels:{sms:1,email:1,voice:1,msg:1},  replies:3,created:"Yesterday"},
-  {id:"L007",name:"Kevin Okafor",   email:"kevin@email.com",  phone:"+1(312)445-7733",type:"purchase", status:"lost",     source:"FB Lead Ads",day:14,agent:"—",       channels:{sms:1,email:1,voice:1,msg:0},  replies:0,created:"2 days ago"},
-];
-
-const CONVERSATIONS = {
-  "L002":[
-    {dir:"out",ch:"sms",msg:"Hi Sarah! This is Uday Yewale from YZX - Headd Media. Saw you were looking into refinancing — have a quick minute to chat?",time:"10:02 AM"},
-    {dir:"in", ch:"sms",msg:"Hi! Yes I'm interested. What rates are you offering right now?",time:"10:15 AM"},
-    {dir:"out",ch:"sms",msg:"Great question! Current 30yr fixed is around 6.8% but we can often do better depending on your credit profile. Worth a quick 15-min call?",time:"10:16 AM"},
-    {dir:"in", ch:"sms",msg:"Sure, I'm free Thursday afternoon",time:"10:45 AM"},
-    {dir:"out",ch:"email",msg:"[Day 5 Email] Hi Sarah, wanted to share a quick case study — a client similar to you saved $412/month after refinancing last quarter...",time:"Yesterday"},
-  ],
-  "L003":[
-    {dir:"out",ch:"sms",msg:"Hi Marcus! Uday Yewale here. Congrats on looking at your first home purchase! Are you pre-qualified yet?",time:"8:01 AM"},
-    {dir:"in", ch:"sms",msg:"No not yet. How long does that take?",time:"8:30 AM"},
-    {dir:"out",ch:"sms",msg:"Usually 15 minutes over the phone! I can pull your credit and give you a real number. Free call — when works for you?",time:"8:31 AM"},
-    {dir:"in", ch:"sms",msg:"I can do today at 2pm",time:"9:00 AM"},
-    {dir:"out",ch:"sms",msg:"Perfect! I'll call you at 2pm sharp. Talk soon 👍",time:"9:01 AM"},
-    {dir:"in", ch:"phone",msg:"[Call completed — 18 mins — Lead pre-qualified $485K purchase]",time:"2:19 PM"},
-  ],
-  "L004":[
-    {dir:"out",ch:"sms",msg:"Hi Diane, Uday Yewale here. I saw you're interested in refinancing — what's driving the interest? Lower payment or cash-out?",time:"2 days ago"},
-    {dir:"in", ch:"sms",msg:"Lower payment. My current rate is 7.9%",time:"2 days ago"},
-    {dir:"out",ch:"email",msg:"[Day 3 Email] Hi Diane, great news — with a rate of 7.9% you could potentially save significantly...",time:"Yesterday"},
-  ],
-};
-
-const FEED_ITEMS = [
-  {color:"#10b981",agent:"OPENER",  agentTag:"tag-green",  msg:"📱 SMS sent to James Wilson — 'Hi James! Uday Yewale from YZX…'",time:"just now"},
-  {color:"#10b981",agent:"OPENER",  agentTag:"tag-green",  msg:"📧 Email sent to James Wilson — Subject: 'Your purchase loan enquiry'",time:"just now"},
-  {color:"#111827",agent:"MANAGER", agentTag:"tag-black",  msg:"🧠 New lead — Tony Patel (Purchase). Classifying with claude-sonnet-4-6…",time:"2 min ago"},
-  {color:"#111827",agent:"MANAGER", agentTag:"tag-black",  msg:"✅ Classified → Purchase | High Urgency | Tone: Excited. Opener queued in 90s.",time:"2 min ago"},
-  {color:"#3b82f6",agent:"NURTURER",agentTag:"tag-blue",   msg:"📅 Day 5 email queued for Sarah Chen — 'Case study: client saved $412/mo'",time:"5 min ago"},
-  {color:"#111827",agent:"MANAGER", agentTag:"tag-black",  msg:"💬 Marcus Webb replied via SMS — generating response with Claude…",time:"15 min ago"},
-  {color:"#10b981",agent:"MANAGER", agentTag:"tag-green",  msg:"🎯 Marcus Webb QUALIFIED — flagging for LO handoff to Uday Yewale",time:"18 min ago"},
-  {color:"#3b82f6",agent:"NURTURER",agentTag:"tag-blue",   msg:"📱 Day 9 SMS sent to Diane Ruiz — 'Hi Diane, still here to help…'",time:"1 hr ago"},
-  {color:"#6b7280",agent:"SYSTEM",  agentTag:"tag-gray",   msg:"🔔 GHL webhook received — contact.created (James Wilson)",time:"2 min ago"},
-  {color:"#6b7280",agent:"SYSTEM",  agentTag:"tag-gray",   msg:"⚙️ Flask webhook server started on port 8080",time:"8 hr ago"},
-];
-
-const LOG_LINES = [
-  {time:"10:02:14",level:"INFO",   msg:"[SERVER] GHL webhook received → contact.created: James Wilson (L001)"},
-  {time:"10:02:14",level:"INFO",   msg:"[MANAGER] New lead received → James Wilson (L001)"},
-  {time:"10:02:15",level:"INFO",   msg:"[MANAGER] Classifying lead with claude-sonnet-4-6…"},
-  {time:"10:02:17",level:"SUCCESS",msg:"[MANAGER] Lead classified → purchase | high urgency | tone: excited"},
-  {time:"10:02:17",level:"INFO",   msg:"[MANAGER] Opener scheduled in 90s for lead L001"},
-  {time:"10:03:47",level:"INFO",   msg:"[OPENER] Running for James Wilson (L001)"},
-  {time:"10:03:48",level:"INFO",   msg:"[OPENER] Generating messages with Claude for purchase lead…"},
-  {time:"10:03:49",level:"SUCCESS",msg:"[OPENER] SMS sent via GHL → +1(626)204-3891"},
-  {time:"10:03:50",level:"SUCCESS",msg:"[OPENER] Email sent via GHL → james@email.com"},
-  {time:"10:03:54",level:"INFO",   msg:"[MANAGER] NurturerAgent scheduled for lead L001"},
-  {time:"10:05:00",level:"INFO",   msg:"[NURTURER] 14-day sequence started for Sarah Chen (L002) — Day 5"},
-  {time:"10:15:22",level:"INFO",   msg:"[SERVER] Inbound SMS from L002 — 'Hi! Yes I'm interested…'"},
-  {time:"10:15:22",level:"INFO",   msg:"[MANAGER] Reply from L002 via sms — generating AI response…"},
-  {time:"10:15:24",level:"SUCCESS",msg:"[MANAGER] SMS reply sent to Sarah Chen via GHL"},
-  {time:"10:18:01",level:"SUCCESS",msg:"[MANAGER] 🎯 LEAD QUALIFIED — handing off Marcus Webb to Uday Yewale"},
-];
-
-const SEQ_DATA = [
-  {name:"Sarah Chen",   type:"refinance",day:5, sent:[1,2,3,5]},
-  {name:"Diane Ruiz",   type:"refinance",day:9, sent:[1,2,3,5,7,9]},
-  {name:"Marcus Webb",  type:"purchase", day:3, sent:[1,2,3]},
-  {name:"Rachel Monroe",type:"refinance",day:14,sent:[1,2,3,5,7,9,11,14]},
-];
+// ═══════════════════════════════ DATA (populated from API)
+let LEADS_DATA = [];
+let CONVERSATIONS = {};
+let FEED_ITEMS = [];
+let LOG_LINES = [];
+let SEQ_DATA = [];
 const ALL_DAYS = [1,2,3,5,7,9,11,14];
+
+// ═══════════════════════════════ REAL DATA LOADER
+async function loadRealData() {
+  try {
+    const [statsRes, leadsRes, logsRes] = await Promise.all([
+      fetch("/api/stats").then(r=>r.json()),
+      fetch("/api/leads").then(r=>r.json()),
+      fetch("/api/logs").then(r=>r.json()),
+    ]);
+
+    // ── Stats tiles ──────────────────────────────────────
+    const total   = statsRes.total_leads   || 0;
+    const msgs    = (statsRes.sms_sent||0) + (statsRes.emails_sent||0);
+    const qual    = statsRes.qualified     || 0;
+    document.getElementById("sv-total").textContent = total;
+    document.getElementById("sv-msgs").textContent  = msgs;
+    document.getElementById("sv-qual").textContent  = qual;
+
+    // ── Leads table ──────────────────────────────────────
+    const statusMap = {
+      new:"new", opener:"opener", nurture:"nurture",
+      handed_off:"qualified", completed:"lost",
+      stopped:"lost", running:"nurture",
+    };
+    const agentMap = {
+      new:"Manager", opener:"Opener", nurture:"Nurturer",
+      handed_off:"Manager", completed:"—", stopped:"—",
+    };
+    LEADS_DATA = (Array.isArray(leadsRes) ? leadsRes : []).map(l => ({
+      id:      l.id,
+      name:    l.name || "Unknown",
+      email:   l.email || "",
+      phone:   l.phone || "",
+      type:    l.lead_type || "unknown",
+      status:  statusMap[l.status] || l.status || "new",
+      source:  l.source || "GHL",
+      day:     l.nurturer_step || 0,
+      agent:   agentMap[l.status] || "Manager",
+      channels:{
+        sms:   l.opener_fired ? 1 : 0,
+        email: l.opener_fired ? 1 : 0,
+        voice: 0, msg: 0,
+      },
+      replies: 0,
+      created: _fmtDate(l.created_at),
+    }));
+
+    document.getElementById("nb-leads").textContent = LEADS_DATA.length;
+
+    // ── Nurture sequence tracker ──────────────────────────
+    SEQ_DATA = LEADS_DATA
+      .filter(l => l.day > 0 && l.status !== "lost")
+      .map(l => ({
+        name: l.name,
+        type: l.type,
+        day:  l.day,
+        sent: ALL_DAYS.filter(d => d <= l.day),
+      }));
+
+    // ── Agent card stats ──────────────────────────────────
+    const active = LEADS_DATA.filter(l=>!["lost"].includes(l.status)).length;
+    const nurturing = LEADS_DATA.filter(l=>l.status==="nurture").length;
+    document.getElementById("m-routed").textContent  = total;
+    document.getElementById("m-handoff").textContent = qual;
+    document.getElementById("n-active").textContent  = nurturing;
+
+    // ── Logs ──────────────────────────────────────────────
+    LOG_LINES = (Array.isArray(logsRes) ? logsRes : []).map(l => ({
+      time:  l.created_at ? l.created_at.split(" ")[1] || l.created_at : "—",
+      level: l.level || "INFO",
+      msg:   `[${l.source||"SYSTEM"}] ${l.message}`,
+    }));
+
+    // ── Feed from recent logs ─────────────────────────────
+    const srcColors = {MANAGER:"#111827",OPENER:"#10b981",NURTURER:"#3b82f6",SERVER:"#6b7280",SYSTEM:"#6b7280"};
+    const srcTags   = {MANAGER:"tag-black",OPENER:"tag-green",NURTURER:"tag-blue",SERVER:"tag-gray",SYSTEM:"tag-gray"};
+    FEED_ITEMS = LOG_LINES.slice(0,20).map(l => {
+      const src = l.msg.match(/\[([A-Z]+)\]/)?.[1] || "SYSTEM";
+      return {color:srcColors[src]||"#6b7280", agent:src, agentTag:srcTags[src]||"tag-gray", msg:l.msg, time:l.time};
+    });
+
+    if(FEED_ITEMS.length === 0) {
+      FEED_ITEMS = [{color:"#6b7280",agent:"SYSTEM",agentTag:"tag-gray",msg:"⏳ Waiting for first lead — webhook is live and ready.",time:"now"}];
+    }
+
+    renderFeed();
+    renderSeqTracker();
+    renderLeadTable();
+
+    // Refresh conversations badge
+    const withConvo = LEADS_DATA.filter(l=>CONVERSATIONS[l.id]);
+    document.getElementById("nb-conv").textContent = withConvo.length || LEADS_DATA.length;
+
+  } catch(err) {
+    console.error("loadRealData failed:", err);
+  }
+}
+
+function _fmtDate(dt) {
+  if (!dt) return "—";
+  try {
+    const d = new Date(dt.replace(" ","T")+"Z");
+    const now = new Date();
+    const diff = Math.floor((now - d) / 1000);
+    if (diff < 60)  return "just now";
+    if (diff < 3600) return Math.floor(diff/60)+" min ago";
+    if (diff < 86400) return Math.floor(diff/3600)+" hr ago";
+    return Math.floor(diff/86400)+" days ago";
+  } catch(e) { return dt; }
+}
 
 const CHANNELS_DATA = [
   {id:"sms",      name:"SMS",       icon:"📱", sent:18,rate:74,color:"#10b981", on:true,  provider:"GHL A2P"},
@@ -938,10 +983,22 @@ function showToast(msg) {
 function closeModal(id) { document.getElementById(id).classList.remove("open"); }
 
 // ═══════════════════════════════ SIDE PANEL
-function openPanel(leadId) {
+async function openPanel(leadId) {
   const lead = LEADS_DATA.find(l=>l.id===leadId);
   if(!lead) return;
   currentLeadId = leadId;
+  // Fetch conversation from server if not cached
+  if(!CONVERSATIONS[leadId]) {
+    try {
+      const msgs = await fetch(`/api/conversations/${leadId}`).then(r=>r.json());
+      CONVERSATIONS[leadId] = (msgs||[]).map(m=>({
+        dir:  m.role==="assistant"?"out":"in",
+        ch:   m.channel||"sms",
+        msg:  m.content,
+        time: _fmtDate(m.created_at),
+      }));
+    } catch(e) { CONVERSATIONS[leadId]=[]; }
+  }
   document.getElementById("sp-lead-name").textContent = lead.name;
   const tagMap = {opener:"tag-orange",nurture:"tag-blue",qualified:"tag-green",new:"tag-yellow",lost:"tag-red"};
   const lblMap = {opener:"⚡ Opener Active",nurture:"🌱 Nurturing",qualified:"🎯 Qualified",new:"🆕 New",lost:"❌ Lost"};
@@ -1220,14 +1277,18 @@ function sortLeads(key){leadSortKey===key?leadSortDir*=-1:(leadSortKey=key,leadS
 
 // ═══════════════════════════════ CONVERSATIONS
 function renderConversations() {
-  const leads=LEADS_DATA.filter(l=>CONVERSATIONS[l.id]);
+  const leads = LEADS_DATA.length > 0 ? LEADS_DATA : [];
+  if(leads.length === 0) {
+    document.getElementById("convoList").innerHTML='<div style="padding:20px;color:var(--muted);font-size:0.75rem;text-align:center">No leads yet — add one to get started</div>';
+    return;
+  }
   document.getElementById("convoList").innerHTML=leads.map(l=>`
     <div onclick="showConvo('${l.id}')" style="padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.1s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
         <div style="font-size:0.82rem;font-weight:700">${l.name}</div>
         <span class="tag ${l.type==="purchase"?"tag-green":"tag-blue"}" style="font-size:0.58rem">${l.type==="purchase"?"🏠":"🔄"} ${l.type}</span>
       </div>
-      <div style="font-size:0.68rem;color:var(--muted)">💬 ${CONVERSATIONS[l.id].length} messages · ${l.replies} replies</div>
+      <div style="font-size:0.68rem;color:var(--muted)">📱 ${l.phone} · ${l.created}</div>
     </div>`).join("");
   document.getElementById("nb-conv").textContent=leads.length;
 }
@@ -1319,23 +1380,32 @@ function renderLogs(){
 function clearLogs(){document.getElementById("logContainer").innerHTML="";showToast("🗑️ Logs cleared");}
 
 // ═══════════════════════════════ ADD LEAD
-function addNewLead(){
+async function addNewLead(){
   const name=document.getElementById("nl-name").value.trim();
   const phone=document.getElementById("nl-phone").value.trim();
   const email=document.getElementById("nl-email").value.trim();
   const type=document.getElementById("nl-type").value;
   if(!name||!phone){showToast("⚠️ Name and phone are required");return;}
-  const id="L00"+(LEADS_DATA.length+1);
-  LEADS_DATA.unshift({id,name,email,phone,type,status:"new",source:"Manual Entry",day:0,agent:"Manager",channels:{sms:0,email:0,voice:0,msg:0},replies:0,created:"just now"});
-  document.getElementById("nb-leads").textContent=LEADS_DATA.length;
-  document.getElementById("sv-total").textContent=LEADS_DATA.length;
-  addFeedItem("#111827","MANAGER","tag-black",`🧠 New lead added manually — ${name} (${type}). Classifying with Claude…`);
-  LOG_LINES.unshift({time:new Date().toLocaleTimeString(),level:"INFO",msg:`[MANAGER] New lead manually added: ${name} (${id})`});
-  closeModal("newLeadModal");
-  showToast(`🚀 ${name} added — agents will fire in 90s`);
-  document.getElementById("nl-name").value="";
-  document.getElementById("nl-phone").value="";
-  document.getElementById("nl-email").value="";
+  showToast("⏳ Creating lead in GHL…");
+  try {
+    const res = await fetch("/api/leads/new", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({name,phone,email,lead_type:type}),
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error||"Failed");
+    closeModal("newLeadModal");
+    showToast(`🚀 ${name} added — agents will fire in 90s!`);
+    addFeedItem("#111827","MANAGER","tag-black",`🧠 New lead — ${name} (${type}). Agents firing in 90s…`);
+    document.getElementById("nl-name").value="";
+    document.getElementById("nl-phone").value="";
+    document.getElementById("nl-email").value="";
+    // Refresh data after 3s to show the new lead
+    setTimeout(loadRealData, 3000);
+  } catch(err) {
+    showToast("❌ Error: "+err.message);
+  }
 }
 
 // ═══════════════════════════════ PROFILE
@@ -1378,12 +1448,13 @@ let simIdx=0;
 function runSim(){if(simIdx<SIM.length){SIM[simIdx]();simIdx++;}setTimeout(runSim,3500+Math.random()*2000);}
 
 // ═══════════════════════════════ INIT
-function init(){
-  renderFeed();
+async function init(){
   renderChannelBars();
   renderMiniChart();
-  renderSeqTracker();
-  setTimeout(runSim,2500);
+  // Load real data first, then start sim after
+  await loadRealData();
+  // Auto-refresh every 30 seconds
+  setInterval(loadRealData, 30000);
 }
 window.addEventListener("load",init);
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closePanel();document.querySelectorAll(".modal-overlay").forEach(m=>m.classList.remove("open"));}});
