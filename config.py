@@ -49,7 +49,7 @@ FB_PAGE_ACCESS_TOKEN = os.getenv("FB_PAGE_ACCESS_TOKEN", "your-fb-page-token")
 FB_VERIFY_TOKEN      = os.getenv("FB_VERIFY_TOKEN",      "your-fb-verify-token")
 
 # ── Webhook Server ────────────────────────────────────────
-FLASK_PORT          = 5000
+FLASK_PORT          = int(os.getenv("PORT", 5000))
 FLASK_DEBUG         = False
 WEBHOOK_BASE_URL    = "https://yourdomain.com"  # Your public server URL (ngrok during dev)
 
