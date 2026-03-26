@@ -51,7 +51,7 @@ FB_VERIFY_TOKEN      = os.getenv("FB_VERIFY_TOKEN",      "your-fb-verify-token")
 # ── Webhook Server ────────────────────────────────────────
 FLASK_PORT          = int(os.getenv("PORT", 5000))
 FLASK_DEBUG         = False
-WEBHOOK_BASE_URL    = "https://yourdomain.com"  # Your public server URL (ngrok during dev)
+WEBHOOK_BASE_URL    = "https://top-secret-production.up.railway.app"
 
 # ── Timing ────────────────────────────────────────────────
 OPENER_DELAY_SECONDS  = 90       # Fire Agent 1 within 90 seconds of lead
