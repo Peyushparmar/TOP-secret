@@ -133,10 +133,8 @@ def send_email(contact_id: str, subject: str, body: str, html: str = "") -> dict
             "type":      "Email",
             "contactId": contact_id,
             "subject":   subject,
-            "message":   body,
+            "html":      html if html else body.replace("\n", "<br>"),
         }
-        if html:
-            payload["html"] = html
         resp = _session.post(
             f"{GHL_BASE_URL}/conversations/messages",
             json=payload,
